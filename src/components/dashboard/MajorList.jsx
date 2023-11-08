@@ -134,7 +134,7 @@ const MajorList = ({ data, ...props }) => {
                                 <div className="flex justify-between items-center gap-2">
                                     <Link
                                         onClick={handleShow}
-                                        as={`${pathname}?showDialog=y&title=${mg.ten_nhom}&group=${mg.id}&delete=addMajor`}
+                                        as={`${pathname}?showDialog=y&title=${mg.ten_nhom}&group=${mg.id}&action=addMajor`}
                                         href={{
                                             pathname: `${pathname}?showDialog=y`
                                         }}

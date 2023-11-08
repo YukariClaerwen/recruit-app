@@ -14,6 +14,7 @@ export function InputFloating({ label, type, name, id, placeholder }) {
                     type={type}
                     placeholder={placeholder}
                     name={name}
+                    className="border border-3 border-white border-opacity-10 bg-dark bg-opacity-25 rounded-pill text-white"
                 />
                 <label htmlFor={id}>{label}</label>
                 <InputError name={name} />

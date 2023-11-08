@@ -9,7 +9,7 @@ export async function POST(req) {
         let existingGroup, existingMajor
         if (frmGroup === "new") {
             existingGroup = await db.nhomNganh.findUnique({
-                where: { ten_nhom: frmInput, mode: 'insensitive' }
+                where: { ten_nhom: frmInput }
             })
             if (existingGroup) {
                 return NextResponse.json({ group: null, message: `Nhóm <b>${frmInput}</b> đã tồn tại, hãy nhập tên khác` }, { status: 409 })
@@ -22,7 +22,7 @@ export async function POST(req) {
             return NextResponse.json({ group: newGroup, message: `Nhóm <b>${frmInput}</b> đã được tạo!` }, { status: 201 })
         } else {
             existingMajor = await db.nganhNghe.findUnique({
-                where: { ten_nganh: frmInput, mode: 'insensitive' }
+                where: { ten_nganh: frmInput }
             })
 
             if (existingMajor) {

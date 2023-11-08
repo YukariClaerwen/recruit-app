@@ -2,93 +2,101 @@
 import { db } from "@/lib/db";
 import { cache } from "react";
 
-export const getJobs = cache(async () => {
-    try {
-        const jobs = await db.viecLam.findMany({
-            select: {
-                id: true,
-                chuc_danh: true,
-                luong_toi_thieu: true,
-                luong_toi_da: true,
-                luong_thuong_luong: true,
-                luong_loai_tien: true,
-                luot_xem: true,
-                created_at: true,
-                nha_tuyen_dung: {
-                    select: {
-                        ten_cong_ty: true,
-                        logo: true
-                    }
-                },
-                ds_dia_diem: {
-                    select: {
-                        tinh_thanh: {
-                            select: { ten_tinh_thanh: true }
-                        }
-                    }
-                },
-                ds_tu_khoa: {
-                    select: {
-                        tu_khoa: {
-                            select: {
-                                ten_tu_khoa: true,
-                            }
-                        }
-                    }
+const selectJobList = {
+    id: true,
+    chuc_danh: true,
+    luong_toi_thieu: true,
+    luong_toi_da: true,
+    luong_thuong_luong: true,
+    luong_loai_tien: true,
+    luot_xem: true,
+    created_at: true,
+    nha_tuyen_dung: {
+        select: {
+            ten_cong_ty: true,
+            logo: true
+        }
+    },
+    ds_dia_diem: {
+        select: {
+            tinh_thanh: {
+                select: { ten_tinh_thanh: true }
+            }
+        }
+    },
+    ds_tu_khoa: {
+        select: {
+            tu_khoa: {
+                select: {
+                    ten_tu_khoa: true,
                 }
+            }
+        }
+    }
+}
+const returnJobsItem = (jobs) => {
+    const defaultValues = (item) => {
+        return {
+            id: item.id,
+            title: item.chuc_danh,
+            views: item.luot_xem,
+            posted_at: item.created_at,
+            company: {
+                name: item.nha_tuyen_dung.ten_cong_ty,
+                logo: item.nha_tuyen_dung.logo,
             },
-            orderBy: {
-                updated_at: 'desc',
-            }
-        })
-
-        const data = await jobs.map(item => {
-            if (item.luong_thuong_luong) {
-                return {
-                    id: item.id,
-                    title: item.chuc_danh,
-                    salary: false,
-                    views: item.luot_xem,
-                    posted_at: item.created_at,
-                    company: {
-                        name: item.nha_tuyen_dung.ten_cong_ty,
-                        logo: item.nha_tuyen_dung.logo,
-                    },
-                    locations: item.ds_dia_diem.map(loc => {
-                        return loc['tinh_thanh']['ten_tinh_thanh']
-                    }),
-                    tags: item.ds_tu_khoa.map(tag => {
-                        return tag['tu_khoa']['ten_tu_khoa']
-                    })
-                }
-            }
+            locations: item.ds_dia_diem.map(loc => {
+                return loc['tinh_thanh']['ten_tinh_thanh']
+            }),
+            tags: item.ds_tu_khoa.map(tag => {
+                return tag['tu_khoa']['ten_tu_khoa']
+            })
+        }
+    }
+    const data = jobs.map(item => {
+        if (item.luong_thuong_luong) {
             return {
-                id: item.id,
-                title: item.chuc_danh,
-                salary: {
-                    min: item.luong_toi_thieu,
-                    max: item.luong_toi_da,
-                    currency: item.luong_loai_tien,
-                },
-                views: item.luot_xem,
-                posted_at: item.created_at,
-                company: {
-                    name: item.nha_tuyen_dung.ten_cong_ty,
-                    logo: item.nha_tuyen_dung.logo,
-                },
-                locations: item.ds_dia_diem.map(loc => {
-                    return loc['tinh_thanh']['ten_tinh_thanh']
-                }),
-                tags: item.ds_tu_khoa.map(tag => {
-                    return tag['tu_khoa']['ten_tu_khoa']
-                })
+                ...defaultValues(item),
+                salary: false
             }
-        })
+        }
+        return {
+            ...defaultValues(item),
+            salary: {
+                min: item.luong_toi_thieu.toFixed(0).toString(),
+                max: item.luong_toi_da.toFixed(0).toString(),
+                currency: item.luong_loai_tien,
+            },
+        }
+    })
 
-        return data
+    return data
+}
+
+export const getJobs = cache(async (skip = 0, take = 10) => {
+    try {
+
+        const [jobs, count] = await db.$transaction([
+            db.viecLam.findMany({
+                skip: skip,
+                take: take,
+                select: selectJobList,
+                orderBy: {
+                    updated_at: 'desc',
+                }
+            }),
+            db.viecLam.count()
+        ])
+        const data = returnJobsItem(await jobs)
+        return {
+            data: data,
+            pagination: {
+                total: count
+            }
+        }
 
     } catch (err) {
-        return ({ message: "Something went wrong" }, { status: 500 });
+        return ({ message: err, status: 500 });
     }
 })
 
@@ -136,7 +144,7 @@ export const getJobById = cache(async (id) => {
                 ds_tu_khoa: {
                     select: {
                         tu_khoa: {
-                            select: { ten_tu_khoa: true }
+                            select: { id: true, ten_tu_khoa: true }
                         }
                     }
                 },
@@ -168,13 +176,13 @@ export const getJobById = cache(async (id) => {
             requirements: job.yeu_cau,
             ...(job.luong_thuong_luong ? { salary: false } : {
                 salary: {
-                    min: job.luong_toi_thieu,
-                    max: job.luong_toi_da,
+                    min: job.luong_toi_thieu.toFixed(0).toString(),
+                    max: job.luong_toi_da.toFixed(0).toString(),
                     currency: job.luong_loai_tien,
                 }
             }),
             workingTime: job.thoi_gian_lam_viec,
-            ...(job.an_lien_he ? {contact: false} : {
+            ...(job.an_lien_he ? { contact: false } : {
                 contact: {
                     person: job.nguoi_lien_he,
                     email: job.ds_email_cv,
@@ -193,12 +201,73 @@ export const getJobById = cache(async (id) => {
                 return loc["tinh_thanh"]["ten_tinh_thanh"]
             }),
             tags: job.ds_tu_khoa.map(tag => {
-                return tag['tu_khoa']['ten_tu_khoa']
+                return {
+                    id: tag.tu_khoa.id,
+                    name: tag.tu_khoa.ten_tu_khoa
+                }
             })
 
         }
 
         return data;
+    } catch (err) {
+        return ({ message: err, status: 500 });
+    }
+})
+
+export const searchJobs = cache(async (key, location, skip = 0, take = 10) => {
+    try {
+        const locArr = []
+        if (location != null && location != "all") {
+            locArr.push(parseInt(location));
+        }
+
+        const keyArr = []
+        
+        const query = {
+            OR: [
+                { mo_ta: { search: key, mode: 'insensitive', } },
+                { yeu_cau: { search: key, mode: 'insensitive', } },
+                { chuc_danh: { search: key, mode: 'insensitive', }},
+                { ds_dia_diem: {
+                    some: {
+                        tinh_thanh_id: {
+                            in : locArr
+                        }
+                    }
+                }},
+                { ds_tu_khoa: {
+                    some: {
+                        tu_khoa: {
+                            ten_tu_khoa : { search: key, mode: 'insensitive', }
+                        }
+                    }
+                }}
+            ]
+        }
+        const [jobs, count] = await db.$transaction([
+            db.viecLam.findMany({
+                skip: skip,
+                take: take,
+                where: query,
+                select: selectJobList,
+                orderBy: {
+                    updated_at: 'desc',
+                }
+            }),
+            db.viecLam.count({
+                where: query
+            })
+        ])
+
+        const data = returnJobsItem(await jobs)
+        // return jobs
+        return {
+            data: data,
+            pagination: {
+                total: count
+            }
+        }
     } catch (err) {
         return ({ message: err, status: 500 });
     }

@@ -8,12 +8,12 @@ import Image from "next/image";
 import JobFav from "./jobfavorite";
 import NumberFormat from "../format/number";
 
-const JobList = ({data}) => {
-  const jobs = data;
+const JobList = ({ data }) => {
+  let jobs = data.data
 
   return (
     <>
-      {jobs.map(job => 
+      {jobs.map(job =>
         <div className="bg-white p-4 job-block" key={job.id} id={job.id}>
           <div className="flex justify-between gap-2">
             <div className="job-logo flex items-center justify-center">
@@ -42,7 +42,7 @@ const JobList = ({data}) => {
                   </div>
                   <div className="job-item-icon mr-3">
                     <AiOutlineEnvironment size={24} className="mr-1" />
-                    <span>{job.locations.join(`, `)}</span>
+                    <span>{job.locations[0]}</span>
                   </div>
                 </div>
                 <div>

@@ -1,7 +1,7 @@
 
 import { List } from "@phosphor-icons/react/dist/ssr";
 import Logo from "../ui/logo";
-import { SearchNav } from "../form/search";
+import { SearchNav } from "../client/ui/TopSearch";
 import Button from 'react-bootstrap/Button';
 import UserNav from "./UserNav";
 

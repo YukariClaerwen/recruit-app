@@ -1,18 +1,28 @@
 
-import { getJobs } from "@/app/api/job/job";
+import { getJobs, searchJobs } from "@/app/api/job/job";
 import JobList from "@/components/client/jobs";
 import Image from "next/image";
 
 
-export default async function Jobs() {
-  const data = await getJobs();
+export default async function Jobs({searchParams}) {
+  console.log(searchParams)
+  let data
+  const key = searchParams?.key?.replace(" ","+");
+  const location = searchParams?.location;
 
+  if ((key == '' && location == 'all') || (!searchParams?.key && !searchParams?.location) ) {
+    data = await getJobs();
+  } else {
+    data = await searchJobs(key, location)
+  }
+
+  console.log(data)
   return (
     <div className="px-3.5 pt-5 lg:px-20 bgcolor-LightGray">
       <div className="flex flex-col lg:flex-row justify-between gap-4 py-5">
         <div className="basis-full lg:basis-3/4">
           <div className="flex justify-between mb-4">
-            <div className="text-xl"><span className="color-Purple">{data.length}</span> việc làm phù hợp</div>
+            <div className="text-xl"><span className="color-Purple">{data.pagination.total}</span> việc làm phù hợp</div>
             <div className="w-80">
               <select className="form-select rounded-pill">
                 <option defaultValue="">Sắp xếp</option>

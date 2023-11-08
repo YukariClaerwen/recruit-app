@@ -9,6 +9,8 @@ import {
 import ApplyBtnToast, { ApplyBtn } from "./ui/applyBtn";
 import Moment from "react-moment";
 import NumberFormat from "../format/number";
+import { FaRegBookmark } from "react-icons/fa6";
+import Link from "next/link";
 
 const JobDetail = ({ data }) => {
 
@@ -93,6 +95,18 @@ const JobDetail = ({ data }) => {
                 </div>
               ) : <></>
             }
+            <div className="border-t-2 border-gray-300 pt-3">
+              <p className="color-Purple">
+                <FaRegBookmark className="inline mr-1" />
+                <span className="font-logo mr-3">Từ khóa: </span>
+                {
+                  data.tags.map(tag => (
+                    <Link href={`/jobs?tag=${tag.name}`} key={tag.id} className="text-sm link-style link-recommend mr-2">{tag.name}</Link>
+                  ))
+                }
+                
+              </p>
+            </div>
           </div>
           <div className="basis-1/3">
             <div className="rounded-3 p-4 job-item-list">

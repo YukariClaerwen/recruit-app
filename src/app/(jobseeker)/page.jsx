@@ -2,7 +2,7 @@ import User from "@/components/User";
 import JobList from "@/components/client/jobs";
 import Header from "@/components/client/ui/header";
 import Navbar from "@/components/client/ui/navbar";
-import { SearchBar } from "@/components/form/search";
+import { SearchBar } from "@/components/client/ui/TopSearch";
 import { btnVars } from "@/components/ui/button";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";

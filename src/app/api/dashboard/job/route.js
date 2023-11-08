@@ -54,7 +54,7 @@ export async function POST(req) {
         const tags = frmJobTags.map(tag => {
             return tag['label']
         })
-        const findTags = await prisma.tuKhoa.findMany({
+        const findTags = await db.tuKhoa.findMany({
             select: { id: true },
             where: {
                 ten_tu_khoa: { in: tags }
@@ -64,7 +64,7 @@ export async function POST(req) {
             return { tu_khoa_id: tag.id }
         })
 
-        const dataUser = await prisma.taiKhoan.findUnique({
+        const dataUser = await db.taiKhoan.findUnique({
             select: { id: true },
             where: { email: email }
         })

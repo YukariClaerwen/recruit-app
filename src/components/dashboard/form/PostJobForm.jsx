@@ -13,6 +13,7 @@ import { postJobYup } from "@/lib/inputValidation";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "next-auth/react";
+import { revalidate } from "@/app/(dashboard)/admin/jobs/action";
 // import * as yup from "yup";
 
 
@@ -20,6 +21,7 @@ const PostJobForm = ({ data, ...props }) => {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
   const salaryCurrency = [
     { value: "1", label: "VND" },
     { value: "2", label: "USD" }
@@ -71,8 +73,9 @@ const PostJobForm = ({ data, ...props }) => {
 
   // console.log(form.getValues())
   const onSubmit = async (value) => {
-    console.log(value);
+    setLoading(true)
     setValues(value);
+
     const res = await fetch('/api/dashboard/job', {
       method: 'POST',
       headers: {
@@ -84,13 +87,17 @@ const PostJobForm = ({ data, ...props }) => {
       })
     })
 
+    await revalidate();
+
     if (res.ok) {
       toast({
         description: "Đăng việc làm thành công",
       })
       removeLocal("frmJob")
+      setLoading(false);
       router.push('/admin/jobs')
     } else {
+      setLoading(false);
       toast({
         title: "Lỗi!",
         description: "Có lỗi xảy ra, không thể đăng việc làm.",

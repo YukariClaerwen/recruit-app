@@ -1,6 +1,8 @@
-"use server";
+
 import { db } from "@/lib/db";
 import { cache } from "react";
+
+export const revalidate = 3600 // revalidate the data at most every hour
 
 const selectJobList = {
     id: true,
@@ -222,29 +224,39 @@ export const searchJobs = cache(async (key, location, skip = 0, take = 10) => {
             locArr.push(parseInt(location));
         }
 
-        const keyArr = []
-        
-        const query = {
-            OR: [
-                { mo_ta: { search: key, mode: 'insensitive', } },
-                { yeu_cau: { search: key, mode: 'insensitive', } },
-                { chuc_danh: { search: key, mode: 'insensitive', }},
-                { ds_dia_diem: {
+        let query = {}
+        const keys = [
+            { mo_ta: { contains: key, mode: 'insensitive', } },
+            { yeu_cau: { contains: key, mode: 'insensitive', } },
+            { chuc_danh: { contains: key, mode: 'insensitive', }},
+            { ds_tu_khoa: {
+                some: {
+                    tu_khoa: {
+                        ten_tu_khoa : { contains: key, mode: 'insensitive', }
+                    }
+                }
+            }}
+        ]
+
+        if(location == "all") {
+            query = {
+                OR: keys
+            }
+        } else {
+            query = {
+                OR: keys,
+                ds_dia_diem: {
                     some: {
                         tinh_thanh_id: {
                             in : locArr
                         }
                     }
-                }},
-                { ds_tu_khoa: {
-                    some: {
-                        tu_khoa: {
-                            ten_tu_khoa : { search: key, mode: 'insensitive', }
-                        }
-                    }
-                }}
-            ]
+                },
+            }
         }
+        
+        
+        
         const [jobs, count] = await db.$transaction([
             db.viecLam.findMany({
                 skip: skip,

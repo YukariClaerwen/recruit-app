@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { Tags } from "lucide-react";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {

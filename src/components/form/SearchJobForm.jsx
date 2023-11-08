@@ -6,15 +6,6 @@ import useSWR from 'swr';
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const SearchJobForm = ({data}) => {
-    // const { data, error } = useSWR('api/job', fetcher);
-    
-    // const handleSearch = (e) => {
-    //     e.preventDefault();
-    //     const formData = new FormData(e.target);
-    //     const form_values = Object.fromEntries(formData);
-    //     console.log(form_values);
-    // }
-
     return (
         <form  action="/jobs" >
             <div className="flex justify-between gap-3">

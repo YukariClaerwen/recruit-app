@@ -11,7 +11,7 @@ const page = async () => {
         </>
     )
     return (
-        <Dcard title="Tin tuyển dụng" des={`${data.length} việc làm`} toplinks={links}>
+        <Dcard title="Tin tuyển dụng" des={`${data.pagination.total} việc làm`} toplinks={links}>
             <div className="grid grid-cols-1 gap-4 pb-5">
                 <JobList data={data} />
             </div>

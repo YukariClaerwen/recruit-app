@@ -227,8 +227,8 @@ model ViecLam {
   loai_viec_lam      String?            @db.Citext
   mo_ta              String?
   yeu_cau            String?
-  luong_toi_thieu    Float?
-  luong_toi_da       Float?
+  luong_toi_thieu    Decimal?
+  luong_toi_da       Decimal?
   luong_thuong_luong Boolean?           @default(false)
   luong_loai_tien    Int?               @default(0)
   thoi_gian_lam_viec String?            @db.VarChar(256)

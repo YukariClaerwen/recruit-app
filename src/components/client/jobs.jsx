@@ -42,7 +42,7 @@ const JobList = ({data}) => {
                   </div>
                   <div className="job-item-icon mr-3">
                     <AiOutlineEnvironment size={24} className="mr-1" />
-                    <span>{job.locations.join(`,&nbsp;`)}</span>
+                    <span>{job.locations.join(`, `)}</span>
                   </div>
                 </div>
                 <div>

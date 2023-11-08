@@ -141,7 +141,7 @@ const JobDetail = ({ data }) => {
                   <div>
                     <p>Ngôn ngữ CV</p>
                     <p>
-                      {data.cvLangs.join(",&nbsp;")}
+                      {data.cvLangs.join(", ")}
                     </p>
                   </div>
                 </li>
@@ -150,7 +150,7 @@ const JobDetail = ({ data }) => {
                   <div>
                     <p>Địa điểm</p>
                     <p>
-                      {data.locations.join(`,&nbsp;`)}
+                      {data.locations.join(`, `)}
                     </p>
                   </div>
                 </li>

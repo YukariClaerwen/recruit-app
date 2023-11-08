@@ -36,6 +36,9 @@ export const getJobs = cache(async () => {
                         }
                     }
                 }
+            },
+            orderBy: {
+                updated_at: 'desc',
             }
         })
 

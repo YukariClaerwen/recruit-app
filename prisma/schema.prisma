@@ -1,0 +1,503 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TaiKhoan {
+  id                Int           @id @default(autoincrement())
+  email             String        @unique @db.Citext
+  ten_tai_khoan     String        @unique @db.Citext
+  mat_khau          String        @db.VarChar(256)
+  is_deleted        Boolean       @default(false)
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+  avatar            String?
+  nha_tuyen_dung    NhaTuyenDung?
+  ds_phan_quyen     PhanQuyen[]
+  quan_tri          QuanTri?
+  tu_van_vien       TuVanVien?
+  ung_vien          UngVien?
+  ds_tin_tuyen_dung ViecLam[]
+
+  @@index([created_at])
+}
+
+model Quyen {
+  id            Int         @id @default(autoincrement())
+  ten_quyen     String      @db.Citext
+  mo_ta         String?     @db.VarChar(256)
+  is_deleted    Boolean     @default(false)
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @default(now()) @updatedAt
+  ds_phan_quyen PhanQuyen[]
+
+  @@index([created_at])
+}
+
+model PhanQuyen {
+  id           Int      @id @default(autoincrement())
+  quyen_id     Int
+  tai_khoan_id Int
+  is_deleted   Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @default(now()) @updatedAt
+  quyen        Quyen    @relation(fields: [quyen_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PhanQuyen_Quyen_id")
+  tai_khoan    TaiKhoan @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PhanQuyen_TaiKhoan_id")
+
+  @@index([created_at])
+}
+
+model QuanTri {
+  tai_khoan_id Int      @id
+  quan_tri_id  Int      @unique @default(autoincrement())
+  ho_ten       String?  @db.VarChar(256)
+  is_deleted   Boolean  @default(false)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  tai_khoan    TaiKhoan @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "QT_TaiKhoan_id")
+
+  @@index([created_at])
+}
+
+model TuVanVien {
+  tai_khoan_id      Int            @id
+  tu_van_vien_id    Int            @unique @default(autoincrement())
+  ho_ten            String?        @db.VarChar(256)
+  so_dien_thoai     String?
+  is_deleted        Boolean        @default(false)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+  ds_nha_tuyen_dung NhaTuyenDung[]
+  tai_khoan         TaiKhoan       @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "TVV_TaiKhoan_id")
+  ds_ung_vien       UngVien[]
+
+  @@index([created_at])
+}
+
+model UngVien {
+  tai_khoan_id          Int               @id
+  ung_vien_id           Int               @unique @default(autoincrement())
+  ho                    String?           @db.VarChar(256)
+  ten                   String?           @db.VarChar(256)
+  gioi_tinh             String?
+  ngay_sinh             DateTime?
+  quoc_tich             Boolean?          @default(true)
+  hon_nhan              Boolean?          @default(false)
+  chuc_danh             String?           @db.VarChar(256)
+  nam_kinh_nghiem       Int?              @default(0)
+  dia_chi               String?           @db.VarChar(256)
+  so_dien_thoai         String?           @db.VarChar(256)
+  cap_bac_id            Int?
+  bang_cap_id           Int?
+  tu_van_vien_id        Int?
+  is_deleted            Boolean           @default(false)
+  created_at            DateTime          @default(now())
+  updated_at            DateTime          @updatedAt
+  ds_cont_ty_yeu_thic   CongTyYeuThich[]
+  ds_don_ung_tuyen      DonUngTuyen[]
+  ho_so                 HoSo?
+  tai_khoan             TaiKhoan          @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "UV_TaiKhoan_id")
+  bang_cap              BangCap?          @relation(fields: [bang_cap_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "UngVien_BangCap_id")
+  cap_bac               CapBac?           @relation(fields: [cap_bac_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "UngVien_CapBac_id")
+  tu_van_vien           TuVanVien?        @relation(fields: [tu_van_vien_id], references: [tai_khoan_id], onDelete: NoAction, onUpdate: NoAction, map: "UngVien_TuVanVien_id")
+  ds_viec_lam_yeu_thich ViecLamYeuThich[]
+
+  @@index([created_at])
+}
+
+model NhaTuyenDung {
+  tai_khoan_id      Int                     @id
+  nha_tuyen_dung_id Int                     @unique @default(autoincrement())
+  ten_cong_ty       String?                 @db.VarChar(256)
+  dia_chi           String?                 @db.VarChar(256)
+  quy_mo_id         Int?
+  quoc_gia          String?                 @db.VarChar(256)
+  nguoi_lien_he     String?                 @db.VarChar(256)
+  linh_vuc_id       Int?
+  mo_ta             String?
+  logo              String?                 @db.VarChar(256)
+  updated_at        DateTime                @updatedAt
+  tinh_thanh_id     Int?
+  tu_van_vien_id    Int?
+  ds_thich          CongTyYeuThich[]
+  ds_don_ung_tuyen  DonUngTuyen[]
+  ds_nganh          NganhNgheNhaTuyenDung[]
+  linh_vuc          LinhVuc?                @relation(fields: [linh_vuc_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_LinhVuc_id")
+  quy_mo            QuyMo?                  @relation(fields: [quy_mo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_QuyMo_id")
+  tai_khoan         TaiKhoan                @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_TaiKhoan_id")
+  tinh_thanh        TinhThanh?              @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_TinhThanh_id")
+  tu_van_vien       TuVanVien?              @relation(fields: [tu_van_vien_id], references: [tai_khoan_id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_TuVanVien_id")
+  ds_phuc_loi       PhucLoiNhaTuyenDung[]
+  ds_tin_tuyen_dung ViecLam[]
+
+  @@index([nha_tuyen_dung_id])
+}
+
+model CapBac {
+  id          Int       @id @default(autoincrement())
+  ten_cap_bac String    @unique @db.Citext
+  is_deleted  Boolean   @default(false)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @default(now()) @updatedAt
+  ds_ung_vien UngVien[]
+  ds_viec_lam ViecLam[]
+
+  @@index([created_at])
+}
+
+model LoaiTrangThai {
+  id                  Int         @id @default(autoincrement())
+  ten_loai_trang_thai String      @db.VarChar(256)
+  is_deleted          Boolean     @default(false)
+  created_at          DateTime    @default(now())
+  updated_at          DateTime    @default(now()) @updatedAt
+  ds_trang_thai       TrangThai[]
+
+  @@index([created_at])
+}
+
+model TrangThai {
+  id                 Int            @id @default(autoincrement())
+  ten_trang_thai     String         @db.VarChar(256)
+  loai_trang_thai_id Int?
+  is_deleted         Boolean        @default(false)
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @default(now()) @updatedAt
+  loai_trang_thai    LoaiTrangThai? @relation(fields: [loai_trang_thai_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "TrangThai_Loai_id")
+
+  @@index([created_at])
+}
+
+model NgonNgu {
+  id           Int        @id @default(autoincrement())
+  ten_ngon_ngu String     @unique @db.Citext
+  is_deleted   Boolean    @default(false)
+  created_at   DateTime   @default(now())
+  updated_at   DateTime   @default(now())
+  ds_ngoai_ngu NgoaiNgu[]
+  ds_viec_lam  ViecLam[]
+
+  @@index([created_at])
+}
+
+model QuyMo {
+  id                Int            @id @default(autoincrement())
+  quy_mo            String         @db.VarChar(256)
+  is_deleted        Boolean        @default(false)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now()) @updatedAt
+  ds_nha_tuyen_dung NhaTuyenDung[]
+
+  @@index([created_at])
+}
+
+model TinhThanh {
+  id                Int                @id @default(autoincrement())
+  ten_tinh_thanh    String             @unique @db.Citext
+  is_deleted        Boolean            @default(false)
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @default(now()) @updatedAt
+  ds_nha_tuyen_dung NhaTuyenDung[]
+  ds_viec_lam       ViecLamTinhThanh[]
+
+  @@index([created_at])
+}
+
+model ViecLam {
+  id                 Int                @id @default(autoincrement())
+  nganh_nghe_id      Int?
+  cap_bac_id         Int?
+  tai_khoan_id       Int
+  nha_tuyen_dung_id  Int?
+  chuc_danh          String?            @db.VarChar(256)
+  linh_vuc_id        Int?
+  loai_viec_lam      String?            @db.Citext
+  mo_ta              String?
+  yeu_cau            String?
+  luong_toi_thieu    Float?
+  luong_toi_da       Float?
+  luong_thuong_luong Boolean?           @default(false)
+  luong_loai_tien    Int?               @default(0)
+  thoi_gian_lam_viec String?            @db.VarChar(256)
+  nguoi_lien_he      String?            @db.VarChar(256)
+  an_lien_he         Boolean?           @default(false)
+  ds_email_cv        String?            @db.VarChar(256)
+  an_danh            Boolean?           @default(false)
+  han_nhan_ho_so     DateTime?
+  thoi_gian_dang     DateTime?
+  luot_xem           Int?               @default(0)
+  so_luong           Int?
+  tu_tuoi            Int?
+  den_tuoi           Int?
+  ngon_ngu_id        Int?
+  trang_thai         Json?              @db.JsonB
+  thao_tac           Json?              @db.JsonB
+  ngon_ngu_ho_so     Json?              @db.JsonB
+  created_at         DateTime           @default(now())
+  is_deleted         Boolean            @default(false)
+  updated_at         DateTime           @default(now()) @updatedAt
+  ds_don_ung_tuyen   DonUngTuyen[]
+  cap_bac            CapBac?            @relation(fields: [cap_bac_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_CapBac_id")
+  linh_vuc           LinhVuc?           @relation(fields: [linh_vuc_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_LinhVuc_id")
+  nganh_nghe         NganhNghe?         @relation(fields: [nganh_nghe_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NganhNghe_id")
+  ngon_ngu           NgonNgu?           @relation(fields: [ngon_ngu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NgonNgu_id")
+  nguoi_dang         TaiKhoan           @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NguoiDang_id")
+  nha_tuyen_dung     NhaTuyenDung?      @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NhaTuyenDung_id")
+  ds_dia_diem        ViecLamTinhThanh[]
+  ds_thich           ViecLamYeuThich[]
+  ds_tu_khoa         TuKhoaViecLam[]
+
+  @@index([created_at])
+}
+
+model BangCap {
+  id          Int       @id @default(autoincrement())
+  ten_bang    String    @db.Citext
+  created_at  DateTime  @default(now())
+  is_deleted  Boolean   @default(false)
+  updated_at  DateTime  @default(now()) @updatedAt
+  ds_hoc_van  HocVan[]
+  ds_ung_vien UngVien[]
+
+  @@index([created_at])
+}
+
+model HoSo {
+  id             Int          @id @default(autoincrement())
+  ung_vien_id    Int          @unique
+  gioi_thieu     String?      @db.VarChar(256)
+  duoc_tim_kiem  Boolean?     @default(true)
+  duoc_tai       Boolean?     @default(true)
+  created_at     DateTime     @default(now())
+  updated_at     DateTime     @default(now()) @updatedAt
+  ung_vien       UngVien?     @relation(fields: [ung_vien_id], references: [ung_vien_id], onDelete: NoAction, onUpdate: NoAction, map: "HoSo_UngVien_id")
+  ds_hoc_van     HocVan[]
+  ds_kinh_nghiem KinhNghiem[]
+  ds_ngoai_ngu   NgoaiNgu[]
+
+  @@index([created_at])
+}
+
+model HocVan {
+  id           Int       @id @default(autoincrement())
+  ho_so_id     Int
+  bang_cap_id  Int?
+  chuyen_nganh String?   @db.VarChar(256)
+  truong       String?   @db.VarChar(256)
+  tu_thang     DateTime?
+  den_thang    DateTime?
+  thanh_tuu    String?   @db.VarChar(256)
+  created_at   DateTime  @default(now())
+  is_deleted   Boolean   @default(false)
+  updated_at   DateTime  @default(now()) @updatedAt
+  bang_cap     BangCap?  @relation(fields: [bang_cap_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "HocVan_Bang_cap_id")
+  ho_so        HoSo?     @relation(fields: [ho_so_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "HocVan_HoSo_id")
+
+  @@index([created_at])
+}
+
+model KinhNghiem {
+  id             Int       @id @default(autoincrement())
+  ho_so_id       Int
+  chuc_danh      String?   @db.VarChar(256)
+  cong_ty        String?   @db.VarChar(256)
+  tu_thang       DateTime?
+  den_thang      DateTime?
+  la_cv_hien_tai Boolean?  @default(false)
+  mo_ta          String?   @db.VarChar(256)
+  created_at     DateTime  @default(now())
+  is_deleted     Boolean   @default(false)
+  updated_at     DateTime  @default(now()) @updatedAt
+  ho_so          HoSo?     @relation(fields: [ho_so_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "KinhNghiem_HoSo_id")
+
+  @@index([created_at])
+}
+
+model LinhVuc {
+  id                Int            @id @default(autoincrement())
+  ten_linh_vuc      String         @unique @db.Citext
+  is_deleted        Boolean        @default(false)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now()) @updatedAt
+  ds_nha_tuyen_dung NhaTuyenDung[]
+  ds_viec_lam       ViecLam[]
+
+  @@index([created_at])
+}
+
+model NhomNganh {
+  id            Int         @id @default(autoincrement())
+  ten_nhom      String      @unique @db.Citext
+  is_deleted    Boolean     @default(false)
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @default(now()) @updatedAt
+  icon          String      @default("ph-suitcase-simple")
+  ds_nganh_nghe NganhNghe[]
+}
+
+model NganhNghe {
+  id                Int                     @id @default(autoincrement())
+  ten_nganh         String                  @unique @db.Citext
+  is_deleted        Boolean                 @default(false)
+  created_at        DateTime                @default(now())
+  updated_at        DateTime                @default(now()) @updatedAt
+  icon              String                  @default("ph-suitcase-simple")
+  nhom_nganh_id     Int?
+  nhom_nganh        NhomNganh?              @relation(fields: [nhom_nganh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NganhNghe_NhomNganh_id")
+  ds_nha_tuyen_dung NganhNgheNhaTuyenDung[]
+  ds_viec_lam       ViecLam[]
+
+  @@index([created_at])
+}
+
+model NgoaiNgu {
+  id          Int      @id @default(autoincrement())
+  ho_so_id    Int
+  ngon_ngu_id Int?
+  trinh_do_id Int?
+  created_at  DateTime @default(now())
+  is_deleted  Boolean  @default(false)
+  updated_at  DateTime @default(now()) @updatedAt
+  ho_so       HoSo?    @relation(fields: [ho_so_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NgoaiNgu_HoSo_id")
+  NgonNgu     NgonNgu? @relation(fields: [ngon_ngu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NgoaiNgu_NgonNgu_id")
+  TrinhDo     TrinhDo? @relation(fields: [trinh_do_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NgoaiNgu_TrinhDo_id")
+
+  @@index([created_at])
+}
+
+model TrinhDo {
+  id           Int        @id @default(autoincrement())
+  ten_trinh_do String     @db.Citext
+  ghi_chu      String?    @db.VarChar(256)
+  created_at   DateTime   @default(now())
+  is_deleted   Boolean    @default(false)
+  updated_at   DateTime   @default(now()) @updatedAt
+  ds_ngoai_ngu NgoaiNgu[]
+
+  @@index([created_at])
+}
+
+model ViecLamYeuThich {
+  id          Int      @id @default(autoincrement())
+  viec_lam_id Int
+  ung_vien_id Int
+  created_at  DateTime @default(now())
+  is_deleted  Boolean  @default(false)
+  ung_vien    UngVien  @relation(fields: [ung_vien_id], references: [ung_vien_id], onDelete: NoAction, onUpdate: NoAction, map: "VLYT_UngVien_id")
+  viec_lam    ViecLam  @relation(fields: [viec_lam_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "VLYT_ViecLam_id")
+
+  @@index([created_at])
+}
+
+model DonUngTuyen {
+  id                Int          @id @default(autoincrement())
+  viec_lam_id       Int
+  ung_vien_id       Int
+  nha_tuyen_dung_id Int
+  trang_thai        String?
+  created_at        DateTime     @default(now())
+  is_deleted        Boolean      @default(false)
+  updated_at        DateTime     @default(now()) @updatedAt
+  nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "DonUngTuyen_NTD_id")
+  ung_vien          UngVien      @relation(fields: [ung_vien_id], references: [ung_vien_id], onDelete: NoAction, onUpdate: NoAction, map: "DonUngTuyen_UngVien_id")
+  viec_lam          ViecLam      @relation(fields: [viec_lam_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DonUngTuyen_ViecLam_id")
+
+  @@index([created_at])
+}
+
+model ViecLamTinhThanh {
+  id            Int       @id @default(autoincrement())
+  viec_lam_id   Int
+  tinh_thanh_id Int
+  created_at    DateTime  @default(now())
+  is_deleted    Boolean   @default(false)
+  updated_at    DateTime  @default(now()) @updatedAt
+  tinh_thanh    TinhThanh @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLamTheoTinhThanh_TinhThanh_id")
+  viec_lam      ViecLam   @relation(fields: [viec_lam_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLamTheoTinhThanh_ViecLam_id")
+
+  @@index([created_at])
+}
+
+model CongTyYeuThich {
+  id                Int          @id @default(autoincrement())
+  ung_vien_id       Int
+  nha_tuyen_dung_id Int
+  created_at        DateTime     @default(now())
+  is_deleted        Boolean      @default(false)
+  nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "CongTyYeuThich_NTD_id")
+  ung_vien          UngVien      @relation(fields: [ung_vien_id], references: [ung_vien_id], onDelete: NoAction, onUpdate: NoAction, map: "CongTyYeuThich_UngVien_id")
+
+  @@index([created_at])
+}
+
+model NganhNgheNhaTuyenDung {
+  id                Int          @id @default(autoincrement())
+  nha_tuyen_dung_id Int
+  nganh_nghe_id     Int
+  created_at        DateTime     @default(now())
+  is_deleted        Boolean      @default(false)
+  nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "NganhNgheNTD_NTD_id")
+  nganh_nghe        NganhNghe    @relation(fields: [nganh_nghe_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NganhNgheNTD_Nganh_id")
+
+  @@index([created_at])
+}
+
+model PhucLoi {
+  id                Int                   @id @default(autoincrement())
+  ten_phuc_loi      String                @db.Citext
+  icon              String?
+  created_at        DateTime              @default(now())
+  is_deleted        Boolean               @default(false)
+  updated_at        DateTime              @default(now()) @updatedAt
+  ds_nha_tuyen_dung PhucLoiNhaTuyenDung[]
+
+  @@index([created_at])
+}
+
+model PhucLoiNhaTuyenDung {
+  id                Int          @id @default(autoincrement())
+  nha_tuyen_dung_id Int
+  phuc_loi_id       Int
+  mo_ta             String?      @db.VarChar(256)
+  created_at        DateTime     @default(now())
+  is_deleted        Boolean      @default(false)
+  nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "PhucLoiNTD_NTD_id")
+  phuc_loi          PhucLoi      @relation(fields: [phuc_loi_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "PhucLoiNTD_PhucLoi_id")
+
+  @@index([created_at])
+}
+
+model TuKhoa {
+  id          Int             @id @default(autoincrement())
+  ten_tu_khoa String          @unique @db.Citext
+  mo_ta       String?         @db.VarChar(256)
+  created_at  DateTime        @default(now())
+  is_deleted  Boolean         @default(false)
+  updated_at  DateTime        @default(now()) @updatedAt
+  ds_viec_lam TuKhoaViecLam[]
+
+  @@index([created_at])
+}
+
+model TuKhoaViecLam {
+  id            Int      @id @default(autoincrement())
+  tu_khoa_id    Int
+  viec_lam_id   Int
+  created_at    DateTime @default(now())
+  is_deleted_at Boolean  @default(false)
+  tu_khoa       TuKhoa   @relation(fields: [tu_khoa_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "TuKhoaViecLam_TuKhoa_id")
+  viec_lam      ViecLam  @relation(fields: [viec_lam_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "TuKhoaViecLam_ViecLam_id")
+}

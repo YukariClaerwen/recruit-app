@@ -1,0 +1,24 @@
+-- AlterTable
+ALTER TABLE "QuanTri" ALTER COLUMN "ho_ten" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Quyen" ALTER COLUMN "mo_ta" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "TuVanVien" ALTER COLUMN "ho_ten" DROP NOT NULL,
+ALTER COLUMN "so_dien_thoai" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "UngVien" ALTER COLUMN "ten" DROP NOT NULL,
+ALTER COLUMN "gioi_tinh" DROP NOT NULL,
+ALTER COLUMN "ngay_sinh" DROP NOT NULL,
+ALTER COLUMN "quoc_tich" DROP NOT NULL,
+ALTER COLUMN "hon_nhan" DROP NOT NULL,
+ALTER COLUMN "chuc_danh" DROP NOT NULL,
+ALTER COLUMN "nam_kinh_nghiem" DROP NOT NULL,
+ALTER COLUMN "hinh_dai_dien" DROP NOT NULL,
+ALTER COLUMN "dia_chi" DROP NOT NULL,
+ALTER COLUMN "so_dien_thoai" DROP NOT NULL,
+ALTER COLUMN "cap_bac_id" DROP NOT NULL,
+ALTER COLUMN "bang_cap_id" DROP NOT NULL,
+ALTER COLUMN "tu_van_vien_id" DROP NOT NULL;

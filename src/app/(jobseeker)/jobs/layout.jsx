@@ -6,7 +6,7 @@ export default function JobsLayout({
     children, // will be a page or nested layout
   }) {
     return (
-      <section>
+      <section className="min-h-screen">
         <Navbar2/>
         <TopSearch />
    

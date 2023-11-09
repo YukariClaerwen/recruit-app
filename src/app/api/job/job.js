@@ -75,7 +75,24 @@ const returnJobsItem = (jobs) => {
     return data
 }
 
-export const getJobs = cache(async (page = 1) => {
+const sortByDefault = {
+    updated_at: 'desc',
+} 
+const sortAsc = { updated_at: 'asc', }
+const sortSalary = [
+    {luong_loai_tien: 'desc'},
+    {luong_toi_da: 'desc'},
+    {luong_toi_thieu: 'desc'},
+    {luong_thuong_luong: 'desc'}
+]
+
+
+export const getJobs = cache(async (page = 1, sort) => {
+    const sortBy = sort == "asc" ? sortAsc
+                 : sort == "salary" ? sortSalary
+                 : sort == "desc" ? sortByDefault
+                 : sortByDefault
+
     try {
         let take = 10;
         let skip = (page - 1) * take;
@@ -85,9 +102,7 @@ export const getJobs = cache(async (page = 1) => {
                 skip: skip,
                 take: take,
                 select: selectJobList,
-                orderBy: {
-                    updated_at: 'desc',
-                }
+                orderBy: sortBy
             }),
             db.viecLam.count()
         ])
@@ -219,7 +234,11 @@ export const getJobById = cache(async (id) => {
     }
 })
 
-export const searchJobs = cache(async (key, location, page) => {
+export const searchJobs = cache(async (key, location, page, sort) => {
+    const sortBy = sort == "asc" ? sortAsc
+                 : sort == "salary" ? sortSalary
+                 : sort == "desc" ? sortByDefault
+                 : sortByDefault
     try {
         let take = 10;
         let skip = (page - 1) * take;
@@ -267,9 +286,7 @@ export const searchJobs = cache(async (key, location, page) => {
                 take: take,
                 where: query,
                 select: selectJobList,
-                orderBy: {
-                    updated_at: 'desc',
-                }
+                orderBy: sortBy
             }),
             db.viecLam.count({
                 where: query

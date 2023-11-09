@@ -308,6 +308,11 @@ h5,
   text-align: center;
 }
 
+.round-btn.small {
+  padding: var(--bs-btn-padding-y) var(--bs-btn-padding-x);
+  text-transform: none;
+}
+
 .round-btn-border {
   background: var(--white);
   color: var(--purple);
@@ -731,7 +736,13 @@ h5,
   border-color: var(--purple);
 }
 
-.form-control:focus {
+.btn-check:checked + .btn, :not(.btn-check) + .btn:active, .btn:first-child:active, .btn.active, .btn.show {
+  color: var(--bs-btn-active-color);
+  background-color: var(--purple);
+  border-color: var(--purple);
+}
+
+.form-control:focus, .btn:focus-visible {
   box-shadow: 0 0 0 0.25rem rgba(var(--orange-rgb), 0.25);
 }
 

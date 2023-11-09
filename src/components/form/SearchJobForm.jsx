@@ -2,8 +2,8 @@
 
 import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr"
 
-import useSWR from 'swr';
-const fetcher = (url) => fetch(url).then((res) => res.json());
+// import useSWR from 'swr';
+// const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const SearchJobForm = ({data}) => {
     return (

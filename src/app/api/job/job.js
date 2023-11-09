@@ -75,8 +75,10 @@ const returnJobsItem = (jobs) => {
     return data
 }
 
-export const getJobs = cache(async (skip = 0, take = 10) => {
+export const getJobs = cache(async (page = 1) => {
     try {
+        let take = 10;
+        let skip = (page - 1) * take;
 
         const [jobs, count] = await db.$transaction([
             db.viecLam.findMany({
@@ -217,8 +219,10 @@ export const getJobById = cache(async (id) => {
     }
 })
 
-export const searchJobs = cache(async (key, location, skip = 0, take = 10) => {
+export const searchJobs = cache(async (key, location, page) => {
     try {
+        let take = 10;
+        let skip = (page - 1) * take;
         const locArr = []
         if (location != null && location != "all") {
             locArr.push(parseInt(location));

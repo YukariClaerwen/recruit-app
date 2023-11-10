@@ -686,6 +686,7 @@ h5,
 
 .major-link>div:first-child {
   background: var(--white);
+  min-width: 50px;
   width: 50px;
   height: 50px;
   color: var(--purple);
@@ -699,6 +700,10 @@ h5,
 .major-link:hover>div:first-child {
   background: var(--purple);
   color: white;
+}
+
+.major-link>div:last-child {
+  max-width: calc(100% - 70px);
 }
 
 .major-link i {

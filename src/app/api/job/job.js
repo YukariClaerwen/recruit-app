@@ -77,21 +77,43 @@ const returnJobsItem = (jobs) => {
 
 const sortByDefault = {
     updated_at: 'desc',
-} 
+}
 const sortAsc = { updated_at: 'asc', }
-const sortSalary = [
-    {luong_loai_tien: 'desc'},
-    {luong_toi_da: 'desc'},
-    {luong_toi_thieu: 'desc'},
-    {luong_thuong_luong: 'desc'}
-]
+const sortSal = { luong_thuong_luong: 'asc', }
+const sortSalary = async (jobs, key) => {
+    const rate = { usd: 1, vnd: 24000 }
+    if (key == "salary") {
+        const newJobs =  await jobs.sort((a, b) => {
+            const aExchange = (a.luong_loai_tien == 2 ? a.luong_toi_da * rate.vnd : a.luong_toi_da);
+            const bExchange = (b.luong_loai_tien == 2 ? b.luong_toi_da * rate.vnd : b.luong_toi_da);
+            return (aExchange - bExchange);
+        }).sort((a, b) => {
+            const aExchange = (a.luong_loai_tien == 2 ? a.luong_toi_thieu * rate.vnd : a.luong_toi_thieu);
+            const bExchange = (b.luong_loai_tien == 2 ? b.luong_toi_thieu * rate.vnd : b.luong_toi_thieu);
+            return (bExchange - aExchange);
+        }).sort((a, b) => {
+            return (a.luong_thuong_luong === b.luong_thuong_luong) ? 0 : b.luong_thuong_luong ? -1 : 1
+        })
+        return newJobs
+    } else {
+        return jobs
+    }
+}
 
 
-export const getJobs = cache(async (page = 1, sort) => {
+export const getJobs = cache(async (page = 1, sort, tag, major) => {
     const sortBy = sort == "asc" ? sortAsc
-                 : sort == "salary" ? sortSalary
                  : sort == "desc" ? sortByDefault
+                 : sort == "salary" ? sortSal
                  : sortByDefault
+    const where = {
+        nganh_nghe_id: major,
+        ds_tu_khoa: {
+            some: {
+                tu_khoa_id: tag
+            }
+        }
+    }
 
     try {
         let take = 10;
@@ -101,11 +123,19 @@ export const getJobs = cache(async (page = 1, sort) => {
             db.viecLam.findMany({
                 skip: skip,
                 take: take,
+                where: where,
                 select: selectJobList,
                 orderBy: sortBy
             }),
-            db.viecLam.count()
+            db.viecLam.count({
+                where: where
+            })
         ])
+
+        sortSalary(await jobs, sort)
+
+        // console.log(await sortBySalary)
+
         const data = returnJobsItem(await jobs)
         return {
             data: data,
@@ -236,8 +266,8 @@ export const getJobById = cache(async (id) => {
 
 export const searchJobs = cache(async (key, location, page, sort) => {
     const sortBy = sort == "asc" ? sortAsc
-                 : sort == "salary" ? sortSalary
                  : sort == "desc" ? sortByDefault
+                 : sort == "salary" ? sortSal
                  : sortByDefault
     try {
         let take = 10;
@@ -251,17 +281,19 @@ export const searchJobs = cache(async (key, location, page, sort) => {
         const keys = [
             { mo_ta: { contains: key, mode: 'insensitive', } },
             { yeu_cau: { contains: key, mode: 'insensitive', } },
-            { chuc_danh: { contains: key, mode: 'insensitive', }},
-            { ds_tu_khoa: {
-                some: {
-                    tu_khoa: {
-                        ten_tu_khoa : { contains: key, mode: 'insensitive', }
+            { chuc_danh: { contains: key, mode: 'insensitive', } },
+            {
+                ds_tu_khoa: {
+                    some: {
+                        tu_khoa: {
+                            ten_tu_khoa: { contains: key, mode: 'insensitive', }
+                        }
                     }
                 }
-            }}
+            }
         ]
 
-        if(location == "all") {
+        if (location == "all") {
             query = {
                 OR: keys
             }
@@ -271,15 +303,13 @@ export const searchJobs = cache(async (key, location, page, sort) => {
                 ds_dia_diem: {
                     some: {
                         tinh_thanh_id: {
-                            in : locArr
+                            in: locArr
                         }
                     }
                 },
             }
         }
-        
-        
-        
+
         const [jobs, count] = await db.$transaction([
             db.viecLam.findMany({
                 skip: skip,
@@ -293,6 +323,8 @@ export const searchJobs = cache(async (key, location, page, sort) => {
             })
         ])
 
+        sortSalary(await jobs, sort)
+
         const data = returnJobsItem(await jobs)
         // return jobs
         return {
@@ -304,4 +336,8 @@ export const searchJobs = cache(async (key, location, page, sort) => {
     } catch (err) {
         return ({ message: err, status: 500 });
     }
+})
+
+export const searchJobsByTag = cache(async() => {
+
 })

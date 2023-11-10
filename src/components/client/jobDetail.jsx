@@ -101,7 +101,7 @@ const JobDetail = ({ data }) => {
                 <span className="font-logo mr-3">Từ khóa: </span>
                 {
                   data.tags.map(tag => (
-                    <Link href={`/jobs?tag=${tag.name}`} key={tag.id} className="text-sm link-style link-recommend mr-2">{tag.name}</Link>
+                    <Link href={`/jobs?tag=${tag.id}`} key={tag.id} className="text-sm link-style link-recommend mr-2">{tag.name}</Link>
                   ))
                 }
                 

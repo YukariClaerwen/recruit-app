@@ -10,10 +10,14 @@ import Image from "next/image";
 import Link from 'next/link';
 import { FaRegBookmark } from "react-icons/fa6";
 import { getJobs } from "../api/job/job";
+import Script from "next/script";
+import Majors from "@/components/client/majors";
+import { getMajors } from "../api/job/major";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const data = await getJobs();
+  const majors = await getMajors(12);
 
   return (
     <div>
@@ -126,13 +130,13 @@ export default async function Home() {
           </Link>
         </div>
         <div className="lg:flex grid grid-cols-1 md:grid-cols-2 lg:grid-cols-none lg:justify-start gap-4 my-3.5">
-          <a className="round-btn round-btn-no-border btn rounded-pill">Việc làm nổi bật</a>
-          <a className="round-btn round-btn-no-border btn rounded-pill">Việc làm lương cao</a>
-          <a className="round-btn round-btn-no-border btn rounded-pill">Việc làm HCM</a>
-          <a className="round-btn round-btn-no-border btn rounded-pill">Việc làm Hà Nội</a>
+          {/* <Link href="/jobs?" className="round-btn round-btn-no-border btn rounded-pill">Việc làm nổi bật</Link> */}
+          <Link href="/jobs?sort=salary" className="round-btn round-btn-no-border btn rounded-pill">Việc làm lương cao</Link>
+          <Link href="/jobs?location=26" className="round-btn round-btn-no-border btn rounded-pill">Việc làm HCM</Link>
+          <Link href="/jobs?location=22" className="round-btn round-btn-no-border btn rounded-pill">Việc làm Hà Nội</Link>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <JobList data={data}/>
+          <JobList data={data} />
         </div>
         <div className="flex justify-center my-5">
           <Link href="/jobs" className="btn round-btn-border round-btn rounded-pill">
@@ -144,7 +148,25 @@ export default async function Home() {
       </div>
       {/* end recommend jobs */}
 
+      {/* recommend major */}
+      {/* icon scripts */}
+      <div className="w-full py-20 px-35 lg:px-20">
+        <div className="text-xl lg:text-2xl main-title mr-10 font-logo mb-0 font-medium mb-4">
+          Top ngành nghề
+          <span> triển vọng</span>
+        </div>
 
+
+        <Majors data={majors} />
+        <div className="flex justify-center my-5">
+          <Link href="/jobs/majors" className="btn round-btn-border round-btn rounded-pill">
+            <div className="circle-arrow-btn flex justify-items-start gap-1">
+              Xem tất cả
+            </div>
+          </Link>
+        </div>
+      </div>
+      {/* end recommend major */}
     </div>
   );
 }

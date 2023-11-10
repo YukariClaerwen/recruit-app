@@ -12,7 +12,6 @@ const Majors = ({ data }) => {
                 src="https://unpkg.com/@phosphor-icons/web"
                 strategy="lazyOnload"
                 onLoad={() =>
-
                     console.log(`script loaded correctly, window.FB has been populated`)
                 }
             />

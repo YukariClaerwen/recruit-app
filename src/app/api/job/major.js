@@ -26,7 +26,17 @@ export const getMajors = cache(async (take) => {
                 },
             },
         })
-        return majors;
+
+        const data = majors.map(major => {
+            return {
+                id: major.id,
+                name: major.ten_nganh,
+                icon: major.icon,
+                _countJobs: major._count.ds_viec_lam
+            }
+        })
+
+        return data;
 
     } catch (err) {
         return ({ message: err, status: 500 });

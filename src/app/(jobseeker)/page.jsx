@@ -13,11 +13,13 @@ import { getJobs } from "../api/job/job";
 import Script from "next/script";
 import Majors from "@/components/client/majors";
 import { getMajors } from "../api/job/major";
+import { getTags } from "../api/job/tag";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const data = await getJobs();
   const majors = await getMajors(12);
+  const tags = await getTags(5)
 
   return (
     <div>
@@ -104,13 +106,18 @@ export default async function Home() {
         <p className="color-Purple">
           <FaRegBookmark className="inline mr-1" />
           <span className="font-logo mr-3">Gợi ý: </span>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Việc làm HCM</a>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Việc làm Hà Nội</a>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Kế toán</a>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Ngân hàng</a>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Thiết kế</a>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Lập trình</a>
-          <a href="#" className="text-sm link-style link-recommend mr-2">Sales</a>
+          <Link href="/jobs?location=26" className="text-sm link-style link-recommend mr-2">Việc làm HCM</Link>
+          <Link href="/jobs?location=22" className="text-sm link-style link-recommend mr-2">Việc làm Hà Nội</Link>
+
+          {
+            tags.map(tag =>
+              <Link key={tag.id} href={`/jobs?tag=${tag.id}`} className="text-sm link-style link-recommend mr-2">{tag.name}</Link>
+            )
+          }
+          {/* <Link href="/jobs?location=26" className="text-sm link-style link-recommend mr-2">Ngân hàng</Link>
+          <Link href="/jobs?location=26" className="text-sm link-style link-recommend mr-2">Thiết kế</Link>
+          <Link href="/jobs?location=26" className="text-sm link-style link-recommend mr-2">Lập trình</Link>
+          <Link href="/jobs?location=26" className="text-sm link-style link-recommend mr-2">Sales</Link> */}
         </p>
       </div>
       {/* end recommend tags */}

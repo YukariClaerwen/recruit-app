@@ -14,7 +14,7 @@ export async function POST(req) {
             where: { email: email}
         });
         if (existingUserByEmail) {
-            return NextResponse.json({ user: null, message: "User with this email already exists" }, { status: 409 })
+            return NextResponse.json({ user: null, message: `Email ${email} đã tồn tại, hãy đăng nhập hoặc tạo email khác` }, { status: 409 })
         }
 
         // check if username already exists
@@ -22,7 +22,7 @@ export async function POST(req) {
             where: { ten_tai_khoan: username}
         });
         if (existingUserByUsername) {
-            return NextResponse.json({ user: null, message: "User with this username already exists" }, { status: 409 })
+            return NextResponse.json({ user: null, message: `Tên tài khoản ${username} đã tồn tại, hãy nhập một tên khác` }, { status: 409 })
         }
 
         const hashedPassword = await hash(password, 10);
@@ -84,7 +84,7 @@ export async function POST(req) {
         }
         const { mat_khau: newUserPasssword, ...rest } = newUser;
 
-        return NextResponse.json({ user: rest, message: "User created successfully" }, { status: 201 });
+        return NextResponse.json({ user: rest, message: "Bạn đã đăng ký thành công, hãy đăng nhập vào tài khoản của bạn." }, { status: 201 });
     } catch (err) {
         throw new Error(err);
         // return NextResponse.json( { message: "Something went wrong"}, { status: 500 });

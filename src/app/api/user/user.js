@@ -9,7 +9,8 @@ export const getUser = cache(async () => {
                 id: true,
                 email: true,
                 ten_tai_khoan: true,
-                avatar: true,
+                name: true,
+                image: true,
                 created_at: true,
                 updated_at: true,
                 ung_vien: {
@@ -32,6 +33,11 @@ export const getUser = cache(async () => {
                         nha_tuyen_dung_id: true,
                     }
                 },
+                Account: {
+                    select: {
+                        provider: true,
+                    }
+                }
                 
             }
         });
@@ -60,7 +66,7 @@ export const getUser = cache(async () => {
         return d
 
     } catch (err) {
-        return ({ message: "Something went wrong" }, { status: 500 });
+        return ({ message: err , status: 500 });
     }
 })
 export const getCandidates = cache(async () => {
@@ -73,7 +79,7 @@ export const getCandidates = cache(async () => {
                     select: {
                         email: true,
                         ten_tai_khoan: true,
-                        avatar: true,
+                        image: true,
                         created_at: true,
                         updated_at: true,
                     }

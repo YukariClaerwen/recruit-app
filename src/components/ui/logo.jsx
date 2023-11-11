@@ -14,7 +14,8 @@ const logoVars = cva(
             },
             size: {
                 default: "text-3xl lg:text-4xl",
-                md: "text-xl lg:text-2xl"
+                lg: "text-2xl lg:text-3xl",
+                md: "text-xl lg:text-2xl",
             },
         },
         defaultVariants: {

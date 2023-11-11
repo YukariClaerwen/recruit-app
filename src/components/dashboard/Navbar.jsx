@@ -31,11 +31,11 @@ const Navbar = ({showSidebar}) => {
                             <i className="mdi mdi-dots-horizontal"></i>
                         </a>
                     </li> */}
-                    <li className="nav-item nav-toggler-item-right d-lg-none">
+                    {/* <li className="nav-item nav-toggler-item-right d-lg-none">
                         <button className="navbar-toggler align-self-center" type="button" data-toggle="offcanvas">
                             <List size={24} weight="thin" />
                         </button>
-                    </li>
+                    </li> */}
                 </ul>
             </div>
         </nav>

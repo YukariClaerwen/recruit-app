@@ -12,7 +12,7 @@ export default async function Layout({ children }) {
   const session = await getServerSession(authOptions);
   let mainClass = "min-h-screen flex flex-col justify-center items-center text-white gap-5 bgCover";
 
-  if (session?.user && session.user.role !== 'user') {
+  if (session?.user ) {
     mainClass = "bg-lightGray min-h-screen"
   }
 

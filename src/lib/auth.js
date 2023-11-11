@@ -60,18 +60,18 @@ export const authOptions = {
         strategy: 'jwt'
     },
     pages: {
-        signIn: '/sign-in',
+        signIn: '/sign-in'
     },
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             authorization: {
-              params: {
-                prompt: "consent",
-                access_type: "offline",
-                response_type: "code"
-              }
+                params: {
+                    prompt: "consent",
+                    access_type: "offline",
+                    response_type: "code"
+                }
             }
         }),
         CredentialsProvider({
@@ -97,6 +97,8 @@ export const authOptions = {
                     if (!passwordMatch) {
                         return null;
                     }
+                } else {
+                    return null;
                 }
 
                 const userRole = setUserRole(await existingUser.id);
@@ -111,6 +113,18 @@ export const authOptions = {
         })
     ],
     callbacks: {
+        async signIn({ user, account, profile, email, credentials }) {
+            const isAllowedToSignIn = true
+            if (isAllowedToSignIn) {
+                // console.log(user)
+                return true
+            } else {
+                // Return false to display a default error message
+                return false
+                // Or you can return a URL to redirect to:
+                // return '/unauthorized'
+            }
+        },
         async jwt({ token, user, account }) {
             let userRole;
             if (user) {

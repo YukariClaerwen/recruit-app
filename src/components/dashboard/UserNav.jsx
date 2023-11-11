@@ -1,7 +1,7 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { Bell, UserCircle, Gear, SignOut, Sliders } from "@phosphor-icons/react/dist/ssr";
+import { Bell, UserCircle, Gear, SignOut, Sliders, UserCircleGear } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import Button from 'react-bootstrap/Button';
 import { Dropdown, DropdownDivider, DropdownItem, DropdownMenu, DropdownToggle } from "react-bootstrap";
@@ -82,23 +82,33 @@ const UserNav = () => {
                             width={30}
                             height={30}
                             priority
+                            className="rounded-full"
                         />
                     ) : (<UserCircle size={30} weight="thin" />)}
                     <span className="nav-profile-name">{session?.user.username}</span>
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-right navbar-dropdown" align="end">
-                    <DropdownItem href="/admin/settings" className="flex items-center flex-row gap-2">
-                        <Gear size={20} weight="thin" />
-                        Settings
+                    <DropdownItem href="/dashboard/account" className="flex items-center flex-row gap-2 justify-start">
+                        <UserCircleGear size={20} weight="thin" />
+                        Tài khoản
                     </DropdownItem>
-                    <DropdownItem href="/admin" className="flex items-center flex-row gap-2">
-                        <Sliders size={20} weight="thin" />
-                        Admin Panel
-                    </DropdownItem>
+                    {session?.user.role === 'admin' ?
+                        <>
+                            <DropdownItem href="/admin" className="flex items-center flex-row gap-2">
+                                <Sliders size={20} weight="thin" />
+                                Bảng quản trị
+                            </DropdownItem>
+                        </>
+                        : <></>
+                    }
                     <DropdownDivider />
+                    <DropdownItem href="/dashboard/settings" className="flex items-center flex-row gap-2">
+                        <Gear size={20} weight="thin" />
+                        Thiết lập
+                    </DropdownItem>
                     <DropdownItem as={Button} onClick={handleSignOut} className="flex items-center flex-row gap-2">
                         <SignOut size={20} weight="thin" />
-                        Logout
+                        Đăng xuất
                     </DropdownItem>
                 </DropdownMenu>
             </Dropdown>

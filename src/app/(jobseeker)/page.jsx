@@ -14,6 +14,7 @@ import Script from "next/script";
 import Majors from "@/components/client/majors";
 import { getMajors } from "../api/job/major";
 import { getTags } from "../api/job/tag";
+import Alert from "@/components/alert";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -176,6 +177,8 @@ export default async function Home() {
         </div>
       </div>
       {/* end recommend major */}
+
+      <Alert/>
     </div>
   );
 }

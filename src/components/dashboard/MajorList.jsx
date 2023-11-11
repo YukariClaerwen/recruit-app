@@ -111,7 +111,8 @@ const MajorList = ({ data, ...props }) => {
         if (res.ok) {
             const resData = await res.json()
             toast({
-                description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />
+                description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />,
+                variant: 'success',
             })
         } else {
             const err = await res.json();

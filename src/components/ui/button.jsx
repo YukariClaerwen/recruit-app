@@ -10,7 +10,7 @@ const btnVars = cva(
         variants: {
             variant: {
                 default: "",
-                rounded: "rounded-full",
+                rounded: "rounded-full border border-slate",
                 link: "text-white"
             },
             size: {

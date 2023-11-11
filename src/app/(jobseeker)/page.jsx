@@ -21,6 +21,8 @@ export default async function Home() {
   const majors = await getMajors(12);
   const tags = await getTags(5)
 
+  // console.log(session)
+
   return (
     <div>
       <Header />

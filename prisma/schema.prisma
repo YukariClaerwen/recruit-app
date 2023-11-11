@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -8,21 +8,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user TaiKhoan @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         TaiKhoan @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model TaiKhoan {
   id                Int           @id @default(autoincrement())
-  email             String        @unique @db.Citext
-  ten_tai_khoan     String        @unique @db.Citext
-  mat_khau          String        @db.VarChar(256)
+  email             String?       @unique @db.Citext
+  emailVerified     DateTime?
+  name              String?
+  ten_tai_khoan     String?       @unique @db.Citext
+  mat_khau          String?       @db.VarChar(256)
   is_deleted        Boolean       @default(false)
   created_at        DateTime      @default(now())
   updated_at        DateTime      @updatedAt
-  avatar            String?
+  image             String?
   nha_tuyen_dung    NhaTuyenDung?
   ds_phan_quyen     PhanQuyen[]
   quan_tri          QuanTri?
   tu_van_vien       TuVanVien?
   ung_vien          UngVien?
   ds_tin_tuyen_dung ViecLam[]
+  Account           Account[]
+  Session           Session[]
 
   @@index([created_at])
 }

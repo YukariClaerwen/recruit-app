@@ -1,4 +1,7 @@
 
+import { signIn } from 'next-auth/react';
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast"
 import Button from './ui/button';
 
 // const GoogleSignInButton = ({ children }) => {
@@ -14,11 +17,30 @@ import Button from './ui/button';
 
 // export default GoogleSignInButton;
 
-const GoogleSignInButton = ({children}) => {
-  const loginWithGoogle = () => console.log('login with google');
+const GoogleSignInButton = ({ children }) => {
+  const router = useRouter();
+  const { toast } = useToast();
+  const loginWithGoogle = async () => {
+
+    const signInData = await signIn('google', {
+      // callbackUrl: 'http://localhost:3000/'
+      redirect: false,
+    })
+
+    if (signInData?.error) {
+      toast({
+        title: "Lỗi!",
+        description: "Có lỗi xảy ra, không thể đăng nhập bằng google.",
+        variant: 'destructive',
+      })
+    } else {
+      router.refresh();
+      router.push('/');
+    }
+  }
 
   return (
-    <Button onClick={loginWithGoogle} className='w-full' variant="rounded" color="white">
+    <Button type="button" onClick={loginWithGoogle} className='w-full' variant="rounded" color="white">
       {children}
     </Button>
   );

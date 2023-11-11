@@ -13,7 +13,10 @@ const UserNav = () => {
 
     const handleSignOut = async () => {
         await signOut();
-        router.push("/auth-admin/sign-in")
+        if(session?.user.role == "admin")
+            router.push("/auth-admin/sign-in");
+        else
+            router.push("/");
     }
 
     return (

@@ -30,8 +30,11 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    router.push(pathname)
-  }
+    if(session?.user.role == "admin")
+        router.push("/auth-admin/sign-in");
+    else
+        router.push(pathname);
+}
 
   return (
     <div className="sticky top-[-1px] z-30 header">

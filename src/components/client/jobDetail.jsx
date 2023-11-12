@@ -11,6 +11,7 @@ import Moment from "react-moment";
 import NumberFormat from "../format/number";
 import { FaRegBookmark } from "react-icons/fa6";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const JobDetail = ({ data }) => {
 
@@ -46,7 +47,7 @@ const JobDetail = ({ data }) => {
               </div>
             </div>
             <div className="sticky-top2 top-50">
-              <ApplyBtn />
+              <ApplyBtn title={data.title} id={data.id}/>
             </div>
           </div>
         </div>
@@ -173,7 +174,7 @@ const JobDetail = ({ data }) => {
           </div>
         </div>
       </div>
-      <ApplyBtnToast />
+      {/* <ApplyBtnToast /> */}
 
     </div>
   );

@@ -46,7 +46,7 @@ const JobList = ({ data }) => {
                   </div>
                 </div>
                 <div>
-                  <Link href={`?action=apply?id=${job.id}`}>
+                  <Link href={`/jobs/${job.id}?title=${job.title}&showDialog=y&action=apply&id=${job.id}`}>
                     <div className="circle-arrow-btn flex justify-items-start gap-1">
                       Ứng tuyển
                     </div>

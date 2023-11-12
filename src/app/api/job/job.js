@@ -153,6 +153,7 @@ export const getJobById = cache(async (id) => {
     try {
         const job = await db.viecLam.findUnique({
             select: {
+                id: true,
                 nganh_nghe: { select: { ten_nganh: true, } },
                 cap_bac: { select: { ten_cap_bac: true } },
                 nha_tuyen_dung: {
@@ -209,6 +210,7 @@ export const getJobById = cache(async (id) => {
         })
 
         const data = {
+            id: job.id,
             major: job.nganh_nghe.ten_nganh,
             level: job.cap_bac.ten_cap_bac,
             ...(job.an_danh ? { company: false } : {

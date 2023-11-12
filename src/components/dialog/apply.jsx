@@ -1,7 +1,7 @@
 "use client";
 import { X } from "@phosphor-icons/react";
 import { useSearchParams } from "next/navigation";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { FormProvider } from "react-hook-form";
 
 export default function Dialog({ title, onClose, onOk, children, onShow, onSave, form }) {
@@ -9,8 +9,6 @@ export default function Dialog({ title, onClose, onOk, children, onShow, onSave,
     const searchParams = useSearchParams();
     const dialogRef = useRef(null, searchParams);
     const showDialog = searchParams.get('showDialog');
-    const action = searchParams.get('action');
-    const [btnValue, setbtnValue] = useState("Lưu")
 
     useEffect(() => {
         if (showDialog === "y") {
@@ -19,14 +17,9 @@ export default function Dialog({ title, onClose, onOk, children, onShow, onSave,
         } else {
             dialogRef.current?.close();
         }
-        if(action === "apply") {
-            setbtnValue("Nộp đơn")
-        } else {
-            setbtnValue("Lưu")
-        }
-    }, [showDialog, action])
+    }, [showDialog])
 
-    const closeDialog = () => {
+    const closeDialog = (e) => {
         dialogRef.current?.close();
         onClose();
     }
@@ -61,7 +54,7 @@ export default function Dialog({ title, onClose, onOk, children, onShow, onSave,
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" onClick={clickOk}>Bỏ qua</button>
-                                        <button type="submit" className="btn btn-mainCl">{btnValue}</button>
+                                        <button type="submit" className="btn btn-mainCl">Lưu</button>
                                     </div>
                                 </form>
                             </FormProvider>

@@ -1,6 +1,13 @@
 import yup from './yupGlobal'
 
 // yup schema
+export const uploadFileYup = {
+    schema: yup.object().shape({
+        file: yup
+            .mixed()
+            .required('Vui lòng chọn cv')
+    })
+}
 export const addOneFieldYup = {
     schema: yup.object().shape({
         inputField: yup

@@ -33,7 +33,7 @@ const SignInForm = () => {
     useEffect(() => {
         if(session?.status == 'authenticated') {
             setUser(session?.data.user);
-            console.log(session?.data.user)
+            // console.log(session?.data.user)
             if(session?.data.user.role == 'admin') {
                 router.push('/admin');
             }
@@ -60,7 +60,7 @@ const SignInForm = () => {
                 variant: 'destructive',
             })
         } else if(signInData?.ok) {
-            console.log(user)
+            // console.log(user)
         }
     }
 
@@ -74,7 +74,7 @@ const SignInForm = () => {
                 <InputFloating {...email_inputAttr} />
                 <InputFloating {...pass_inputAttr} />
                 <div className="flex justify-between items-center p-2 mb-5">
-                    <Link href='/dashboard/resetPassword' className="color-Orange hover:underline">
+                    <Link href='/password/reset' className="color-Orange hover:underline">
                         Quên mật khẩu?
                     </Link>
 

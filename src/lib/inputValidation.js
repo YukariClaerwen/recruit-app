@@ -8,6 +8,39 @@ export const addOneFieldYup = {
             .required('Vui lòng nhập thông tin.')
     })
 }
+export const resetPassYup = {
+    schema: yup.object().shape({
+        email: yup
+            .string()
+            .required('Vui lòng nhập email.')
+            .email('Email sai cú pháp.'),
+    }),
+    default: {
+        email: '',
+    }
+}
+export const verifyPassYup = {
+    schema: yup.object().shape({
+        email: yup
+            .string()
+            .required('Vui lòng nhập email.')
+            .email('Email sai cú pháp.'),
+        password: yup
+            .string()
+            .required('Vui lòng nhập mật khẩu.')
+            .password('Mật khẩu phải có tối thiểu 8 ký tự, gồm viết hoa, viết thường, chữ số, và 1 ký tự đặc biệt.'),
+        cPassword: yup
+            .string()
+            .required("Vui lòng nhập lại mật khẩu.")
+            .password('Mật khẩu phải có tối thiểu 8 ký tự, gồm viết hoa, viết thường, chữ số, và 1 ký tự đặc biệt.')
+            .oneOf([yup.ref("password")], "Mật khẩu không khớp.")
+    }),
+    default: {
+        email: '',
+        password: '',
+        cPassword: ''
+    }
+}
 export const loginYup = {
     schema: yup.object().shape({
         email: yup

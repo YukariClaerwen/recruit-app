@@ -12,10 +12,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <>
-            <main className="main-content z-10 min-h-screen">
+            <main className="main-content z-10 min-h-screen flex flex-col">
                 <Header />
                 <Navbar />
-                <div className="flex flex-col justify-center items-center color-black gap-5 styleLight">
+                <div className="flex flex-col justify-center items-center color-black gap-5 styleLight grow">
                     <div className='p-10 min-w-min max-w-full w-screen md:w-2/3 lg:w-1/3'>
                         <div className="mb-4 text-center">
                             <Logo href="/" />

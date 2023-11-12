@@ -759,7 +759,8 @@ h5,
 :not(.btn-check)+.btn:active,
 .btn:first-child:active,
 .btn.active,
-.btn.show {
+.btn.show
+.dropdown-item.active, .dropdown-item:active  {
   color: var(--white);
   background-color: var(--purple);
   border-color: var(--purple);

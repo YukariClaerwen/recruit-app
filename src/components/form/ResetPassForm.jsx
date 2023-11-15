@@ -28,18 +28,31 @@ const ResetPassForm = () => {
         console.log(values);
         setLoading(true)
 
-        const error = false
+        const response = await fetch('/api/user/reset-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: values.email
+            })
+        })
 
-        if (!error) {
+        if(response.ok) {
+            setHide(true);
+            const resData = await response.json()
+            toast({
+                description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />,
+                variant: 'success',
+            })
+            router.push('/sign-in')
+        } else {
             setLoading(false)
             toast({
                 title: "Lỗi!",
                 description: "Email không tồn tại hoặc không hợp lệ.",
                 variant: 'destructive',
             })
-        } else if (error) {
-            setHide(true);
-            // console.log(user)
         }
     }
 

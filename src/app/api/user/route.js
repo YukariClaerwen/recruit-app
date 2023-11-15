@@ -3,6 +3,18 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { hash } from 'bcrypt';
 import { Prisma } from "@prisma/client";
+import AWS from 'aws-sdk';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+AWS.config.update({
+    accessKeyId: process.env.AWS_SES_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SES_SECRET_ACCESS_KEY,
+    region: process.env.AWS_SES_REGION_NAME,
+});
+
+const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 
 export async function POST(req) {
     try {
@@ -26,6 +38,17 @@ export async function POST(req) {
         }
 
         const hashedPassword = await hash(password, 10);
+
+        // Create a verification token
+        const verificationToken = Math.random().toString(36).substring(2, 15);
+
+        // Create a request to verify the email address
+        const verifyParams = {
+            EmailAddress: email,
+        };
+
+        // Send verification email
+        await ses.verifyEmailIdentity(verifyParams).promise();
 
         let newUser = ''
 

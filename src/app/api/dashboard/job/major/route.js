@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { getMajor } from "../major";
 
 export async function POST(req) {
     try {
@@ -77,6 +78,17 @@ export async function PUT(req) {
 
         
         
+    } catch (err) {
+        throw new Error(err);
+    }
+}
+
+export async function GET(req) {
+    try {
+        const result = await getMajor();
+
+        return NextResponse.json({ majors: result }, { status: 201 })
+
     } catch (err) {
         throw new Error(err);
     }

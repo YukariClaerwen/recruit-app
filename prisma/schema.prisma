@@ -245,6 +245,7 @@ model TinhThanh {
   created_at        DateTime           @default(now())
   updated_at        DateTime           @default(now()) @updatedAt
   ds_nha_tuyen_dung NhaTuyenDung[]
+  ds_viec_lam_2     ViecLam[]
   ds_viec_lam       ViecLamTinhThanh[]
 
   @@index([created_at])
@@ -258,6 +259,7 @@ model ViecLam {
   nha_tuyen_dung_id  Int?
   chuc_danh          String?            @db.VarChar(256)
   linh_vuc_id        Int?
+  dia_diem_id        Int?
   loai_viec_lam      String?            @db.Citext
   mo_ta              String?
   yeu_cau            String?
@@ -290,6 +292,7 @@ model ViecLam {
   ngon_ngu           NgonNgu?           @relation(fields: [ngon_ngu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NgonNgu_id")
   nguoi_dang         TaiKhoan           @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NguoiDang_id")
   nha_tuyen_dung     NhaTuyenDung?      @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NhaTuyenDung_id")
+  dia_diem           TinhThanh?         @relation(fields: [dia_diem_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_TinhThanh_id")
   ds_dia_diem        ViecLamTinhThanh[]
   ds_thich           ViecLamYeuThich[]
   ds_tu_khoa         TuKhoaViecLam[]

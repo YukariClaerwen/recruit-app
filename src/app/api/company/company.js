@@ -7,7 +7,24 @@ export const revalidate = 3600 // revalidate the data at most every hour
 export const getCompanies = cache(async () => {
     try {
 
-        const companies = await db.nhaTuyenDung.findMany();
+        const companies = await db.nhaTuyenDung.findMany({
+            where: { is_deleted: false },
+            include: {
+                quy_mo: true,
+            }
+        });
+
+        // const result = companies.map((c) => {
+        //     return {
+        //         id: c.nha_tuyen_dung_id,
+        //         company_name: c.ten_cong_ty,
+        //         address: c.dia_chi,
+        //         company_scale: c.quy_mo.quy_mo,
+        //         nation: c.quoc_gia,
+        //         contact_person: c.nguoi_lien_he,
+
+        //     }
+        // })
 
         return ({ data: companies, status: 200 });
 

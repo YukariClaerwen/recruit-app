@@ -159,6 +159,7 @@ model NhaTuyenDung {
   nguoi_lien_he     String?                 @db.VarChar(256)
   linh_vuc_id       Int?
   mo_ta             String?
+  so_dien_thoai     String?
   logo              String?                 @db.VarChar(256)
   is_deleted        Boolean                 @default(false)
   created_at        DateTime                @default(now())

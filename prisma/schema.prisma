@@ -160,6 +160,8 @@ model NhaTuyenDung {
   linh_vuc_id       Int?
   mo_ta             String?
   logo              String?                 @db.VarChar(256)
+  is_deleted        Boolean                 @default(false)
+  created_at        DateTime                @default(now())
   updated_at        DateTime                @updatedAt
   tinh_thanh_id     Int?
   tu_van_vien_id    Int?
@@ -309,6 +311,7 @@ model BangCap {
 model HoSo {
   id             Int          @id @default(autoincrement())
   ung_vien_id    Int          @unique
+  cv_url         String?
   gioi_thieu     String?      @db.VarChar(256)
   duoc_tim_kiem  Boolean?     @default(true)
   duoc_tai       Boolean?     @default(true)
@@ -438,6 +441,7 @@ model DonUngTuyen {
   viec_lam_id       Int
   ung_vien_id       Int
   nha_tuyen_dung_id Int
+  cv_url            String?
   trang_thai        String?
   created_at        DateTime     @default(now())
   is_deleted        Boolean      @default(false)

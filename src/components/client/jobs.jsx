@@ -7,9 +7,12 @@ import Image from "next/image";
 
 import JobFav from "./jobfavorite";
 import NumberFormat from "../format/number";
+import { usePathname, useRouter } from "next/navigation";
 
 const JobList = ({ data }) => {
   let jobs = data.data
+
+  const pathname = usePathname();
 
   return (
     <>
@@ -42,15 +45,14 @@ const JobList = ({ data }) => {
                   </div>
                   <div className="job-item-icon mr-3">
                     <AiOutlineEnvironment size={24} className="mr-1" />
-                    <span>{job.locations[0]}</span>
+                    <span>{job.location.name}</span>
                   </div>
                 </div>
                 <div>
-                  <Link href={`/jobs/${job.id}?title=${job.title}&showDialog=y&action=apply&id=${job.id}`}>
-                    <div className="circle-arrow-btn flex justify-items-start gap-1">
-                      Ứng tuyển
-                    </div>
-                  </Link>
+                    { pathname.includes("/admin/") 
+                    ? <LinkEdit job={job} />
+                    : <LinkApply job={job} />  
+                  }
                 </div>
               </div>
             </div>
@@ -61,3 +63,24 @@ const JobList = ({ data }) => {
   )
 }
 export default JobList;
+
+
+const LinkApply = ({ job }) => {
+  return (
+    <Link href={`/jobs/${job.id}?title=${job.title}&showDialog=y&action=apply&id=${job.id}`}>
+      <div className="circle-arrow-btn flex justify-items-start gap-1">
+        Ứng tuyển
+      </div>
+    </Link>
+  )
+}
+
+const LinkEdit = ({job}) => {
+  return (
+    <Link href={`/admin/jobs/post?action=editJob&jobId=${job.id}`}>
+      <div className="circle-arrow-btn flex justify-items-start gap-1">
+        Edit
+      </div>
+    </Link>
+  )
+}

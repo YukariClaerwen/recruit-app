@@ -8,7 +8,6 @@ const Sidebar = ({ show, setShow, activeKey, onShow }) => {
   const {data : session} = useSession();
   const handleClose = () => setShow(false);
   if (session?.user && session?.user.role === "admin") {
-    console.log("admin")
     return (
       <>
         <Offcanvas show={show} onHide={handleClose} className="sidebar w-1/5" scroll="true" backdrop={false} onShow={onShow}>

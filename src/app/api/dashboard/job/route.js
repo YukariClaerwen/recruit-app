@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { updateJob } from "../../job/job";
 
 export async function POST(req) {
     try {
@@ -34,11 +35,6 @@ export async function POST(req) {
             }
         } = body
 
-        const dataLocations = frmJobLocation.map(item => {
-            return {
-                tinh_thanh_id: item.value,
-            }
-        })
         const newTags = frmJobTags.filter(item => item.__isNew__ === true).map(tag => {
             return {
                 ten_tu_khoa: tag.label
@@ -75,9 +71,7 @@ export async function POST(req) {
                 loai_viec_lam: frmJobType, //done
                 nganh_nghe_id: frmJobMajor.value, //done
                 linh_vuc_id: frmJobCompField.value, //đone
-                ds_dia_diem: {
-                    create: dataLocations, //done
-                },
+                dia_diem_id: frmJobLocation.value,
                 mo_ta: frmJobDes, //done
                 yeu_cau: frmJobReq, //done
                 luong_toi_thieu: parseFloat(frmJobSalaryMin.replace(/\s/g, "").replace(".", "")),
@@ -106,11 +100,33 @@ export async function POST(req) {
             }
         })
 
-        console.log(newJob);
+        // console.log(newJob);
 
 
-        return NextResponse.json({ job: findTags, message: "New job created successfully" })
+        return NextResponse.json({ job: newJob, message: "New job created successfully" }, {status: 201})
     } catch (err) {
-        throw new Error(err);
+        console.log(err)
+        return NextResponse.json({ message: "Có lỗi xảy ra, không thể đăng việc làm!"}, { status: 500 })
+    }
+}
+
+
+export async function PUT(req) {
+    try {
+        const body = await req.json();
+        
+        const result = await updateJob(body);
+
+        if (result.status === 500) {
+            return NextResponse.json({ message: result.message.job}, { status: 500 })
+        }
+        if (result.status === 409) {
+            return NextResponse.json({ message: result.message}, { status: 409 })
+        }
+        return NextResponse.json({ edit: result.data, message: result.message }, { status: 200 })
+
+    } catch (err) {
+        console.log(err)
+        return NextResponse.json({ message: "Có lỗi xảy ra, không thể cập nhật việc làm!"}, { status: 500 })
     }
 }

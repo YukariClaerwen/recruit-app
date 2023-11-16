@@ -173,10 +173,10 @@ model NhaTuyenDung {
   linh_vuc          LinhVuc?                @relation(fields: [linh_vuc_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_LinhVuc_id")
   quy_mo            QuyMo?                  @relation(fields: [quy_mo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_QuyMo_id")
   tai_khoan         TaiKhoan                @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_TaiKhoan_id")
-  tinh_thanh        TinhThanh?              @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_TinhThanh_id")
   tu_van_vien       TuVanVien?              @relation(fields: [tu_van_vien_id], references: [tai_khoan_id], onDelete: NoAction, onUpdate: NoAction, map: "NTD_TuVanVien_id")
   ds_phuc_loi       PhucLoiNhaTuyenDung[]
   ds_tin_tuyen_dung ViecLam[]
+  ds_dia_diem       DiaDiemNhaTuyenDung[]
 
   @@index([nha_tuyen_dung_id])
 }
@@ -240,14 +240,14 @@ model QuyMo {
 }
 
 model TinhThanh {
-  id                Int                @id @default(autoincrement())
-  ten_tinh_thanh    String             @unique @db.Citext
-  is_deleted        Boolean            @default(false)
-  created_at        DateTime           @default(now())
-  updated_at        DateTime           @default(now()) @updatedAt
-  ds_nha_tuyen_dung NhaTuyenDung[]
-  ds_viec_lam_2     ViecLam[]
-  ds_viec_lam       ViecLamTinhThanh[]
+  id                Int                   @id @default(autoincrement())
+  ten_tinh_thanh    String                @unique @db.Citext
+  is_deleted        Boolean               @default(false)
+  created_at        DateTime              @default(now())
+  updated_at        DateTime              @default(now()) @updatedAt
+  ds_viec_lam       ViecLam[]
+  ds_viec_lam_dd    ViecLamTinhThanh[]
+  ds_cong_ty        DiaDiemNhaTuyenDung[]
 
   @@index([created_at])
 }
@@ -540,4 +540,15 @@ model TuKhoaViecLam {
   is_deleted_at Boolean  @default(false)
   tu_khoa       TuKhoa   @relation(fields: [tu_khoa_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "TuKhoaViecLam_TuKhoa_id")
   viec_lam      ViecLam  @relation(fields: [viec_lam_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "TuKhoaViecLam_ViecLam_id")
+}
+
+model DiaDiemNhaTuyenDung {
+  id                Int          @id @default(autoincrement())
+  tinh_thanh_id     Int
+  nha_tuyen_dung_id Int
+  created_at        DateTime     @default(now())
+  is_deleted        Boolean      @default(false)
+  updated_at        DateTime     @default(now()) @updatedAt
+  nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "DiaDiemNTD_NTD_id")
+  tinh_thanh        TinhThanh    @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DiaDiemNTD_TinhThanh_id")
 }

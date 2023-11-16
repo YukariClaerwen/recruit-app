@@ -3,7 +3,7 @@
 import { ButtonMain } from "@/components/bs/button";
 import Dcard from "@/components/client/ui/card";
 import { useEffect, useState } from "react";
-import { Form, FormCheck, FormControl, FormGroup, FormLabel, FormText } from "react-bootstrap";
+import { Form, FormCheck, FormControl, FormGroup, FormLabel, FormText, Spinner } from "react-bootstrap";
 import { FormProvider, useForm } from "react-hook-form";
 import Select from 'react-select'
 import useLocalStorage, { removeLocal } from "./useLocalStorage";
@@ -17,7 +17,7 @@ import { revalidate } from "@/app/(dashboard)/admin/jobs/action";
 // import * as yup from "yup";
 
 
-const PostJobForm = ({ data, ...props }) => {
+const PostJobForm = (props) => {
   const router = useRouter();
   const { toast } = useToast();
   const { data: session } = useSession();
@@ -26,7 +26,7 @@ const PostJobForm = ({ data, ...props }) => {
     { value: "1", label: "VND" },
     { value: "2", label: "USD" }
   ]
-  const frmYup = postJobYup()
+  const frmYup = postJobYup(props.editJob)
 
   const form = useForm({
     mode: 'onChange',
@@ -39,7 +39,7 @@ const PostJobForm = ({ data, ...props }) => {
   const JobLevel = values ? values["frmJobLevel"] : {}
   const JobMajor = values ? values["frmJobMajor"] : {}
   const JobIndustry = values ? values["frmJobCompField"] : {}
-  const JobLocations = values ? values["frmJobLocation"] : []
+  const JobLocation = values ? values["frmJobLocation"] : {}
   const JobSalaryCurrency = values ? values["frmJobSalaryCurrency"] : {}
   const JobTags = values ? values["frmJobTags"] : []
   const JobCVLanguage = values ? values["frmJobCVLanguage"] : []
@@ -49,7 +49,7 @@ const PostJobForm = ({ data, ...props }) => {
   const [selectedLevel, setSelectedLevel] = useState(undefined)
   const [selectedMajor, setSelectedMajor] = useState(undefined)
   const [selectedIndustry, setSelectedIndustry] = useState(undefined)
-  const [selectedLocation, setSelectedLocation] = useState([])
+  const [selectedLocation, setSelectedLocation] = useState(undefined)
   const [selectedCurrency, setSelectedCurrency] = useState(undefined)
   const [tags, setTags] = useState([]);
   const [selectedLanguage, setSelectedLanguage] = useState(undefined)
@@ -60,7 +60,7 @@ const PostJobForm = ({ data, ...props }) => {
     setSelectedLevel(JobLevel)
     setSelectedMajor(JobMajor)
     setSelectedIndustry(JobIndustry)
-    setSelectedLocation(JobLocations)
+    setSelectedLocation(JobLocation)
     setSelectedCurrency(JobSalaryCurrency)
     setTags(JobTags)
     setSelectedLanguage(JobCVLanguage)
@@ -76,31 +76,53 @@ const PostJobForm = ({ data, ...props }) => {
     setLoading(true)
     setValues(value);
 
-    const res = await fetch('/api/dashboard/job', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        frmJob: value,
-        frmUser: { email: session.user.email }
+    let res;
+
+    if (!props.editJob) {
+      res = await fetch('/api/dashboard/job', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          frmJob: value,
+          frmUser: { email: session.user.email }
+        })
       })
-    })
+    } else {
+      res = await fetch('/api/dashboard/job', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          frmJob: value,
+          frmInfo: {
+            email: session.user.email,
+            jobId: props.editJob.id,
+          }
+        })
+      })
+    }
 
     await revalidate();
 
     if (res.ok) {
+
+      const resData = await res.json()
       toast({
-        description: "Đăng việc làm thành công",
+        description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />,
+        variant: 'success',
       })
       removeLocal("frmJob")
       setLoading(false);
       router.push('/admin/jobs')
     } else {
       setLoading(false);
+      const resData = await res.json()
       toast({
         title: "Lỗi!",
-        description: "Có lỗi xảy ra, không thể đăng việc làm.",
+        description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />,
         variant: 'destructive',
       })
     }
@@ -122,7 +144,7 @@ const PostJobForm = ({ data, ...props }) => {
                 label="Cấp bậc"
                 control={form.control}
                 selectedValue={selectedLevel}
-                options={data.levels} />
+                options={props.data.levels} />
               <FrmInput name="frmJobType"
                 label="Loại hình công việc"
                 type="text"
@@ -131,12 +153,12 @@ const PostJobForm = ({ data, ...props }) => {
                 label="Ngành nghề"
                 control={form.control}
                 selectedValue={selectedMajor}
-                options={data.majors} />
+                options={props.data.majors} />
               <FrmSelect name="frmJobCompField"
                 label="Lĩnh vực công ty"
                 control={form.control}
                 selectedValue={selectedIndustry}
-                options={data.industries} />
+                options={props.data.industries} />
             </div>
 
             <div className="mb-3">
@@ -144,9 +166,16 @@ const PostJobForm = ({ data, ...props }) => {
                 label="Địa điểm làm việc"
                 control={form.control}
                 selectedValue={selectedLocation}
-                options={data.locations}
-                isMulti />
+                options={props.data.locations} />
             </div>
+            {/* <div className="mb-3">
+              <FrmSelect name="frmJobLocations"
+                label="Địa điểm làm việc"
+                control={form.control}
+                selectedValue={selectedLocations}
+                options={props.data.locations}
+                isMulti />
+            </div> */}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4">
               <FrmInput name="frmJobDes"
@@ -179,13 +208,13 @@ const PostJobForm = ({ data, ...props }) => {
               <FormCheck type="switch" id="frmJobSalaryHide" label="Ẩn mức lương" className="min-w-[180px] md:mb-5"  {...form.register("frmJobSalaryHide")} />
             </div>
 
-            <FrmCreate name="frmJobTags" label="Từ khóa" selectedValue={tags} control={form.control} placeholder="Nhập từ khóa" options={data.tags}></FrmCreate>
+            <FrmCreate name="frmJobTags" label="Từ khóa" selectedValue={tags} control={form.control} placeholder="Nhập từ khóa" options={props.data.tags}></FrmCreate>
 
             <FrmSelect name="frmJobCVLanguage"
               label="Ngôn ngữ hồ sơ"
               control={form.control}
               selectedValue={selectedLanguage}
-              options={data.languages}
+              options={props.data.languages}
               isMulti />
             <div className="lg:flex grid grid-cols-1 md:grid-cols-2 lg:grid-cols-none lg:justify-start gap-4 items-end">
               <FrmInput name="frmJobContact"
@@ -215,11 +244,14 @@ const PostJobForm = ({ data, ...props }) => {
               label="Tên công ty"
               control={form.control}
               selectedValue={selectedCompany}
-              options={data.companies}
+              options={props.data.companies}
             />
           </div>
           <div className="grid my-5">
-            <ButtonMain type="submit" >Đăng tin tuyển dụng</ButtonMain>
+            <ButtonMain type="submit" disabled={(loading) ? true : false}>
+              {loading ? <Spinner animation="border" size="sm" className="mr-2" /> : <></>}
+              {props.editJob ? "Cập nhật" : "Đăng tin tuyển dụng"}
+            </ButtonMain>
             {/* <ButtonMain as="a" href="/admin/jobs/draft?" >Xem trước</ButtonMain> */}
           </div>
         </Form>

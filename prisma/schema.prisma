@@ -240,14 +240,13 @@ model QuyMo {
 }
 
 model TinhThanh {
-  id                Int                   @id @default(autoincrement())
-  ten_tinh_thanh    String                @unique @db.Citext
-  is_deleted        Boolean               @default(false)
-  created_at        DateTime              @default(now())
-  updated_at        DateTime              @default(now()) @updatedAt
-  ds_viec_lam       ViecLam[]
-  ds_viec_lam_dd    ViecLamTinhThanh[]
-  ds_cong_ty        DiaDiemNhaTuyenDung[]
+  id             Int                   @id @default(autoincrement())
+  ten_tinh_thanh String                @unique @db.Citext
+  is_deleted     Boolean               @default(false)
+  created_at     DateTime              @default(now())
+  updated_at     DateTime              @default(now()) @updatedAt
+  ds_viec_lam    ViecLam[]
+  ds_cong_ty     DiaDiemNhaTuyenDung[]
 
   @@index([created_at])
 }
@@ -294,7 +293,6 @@ model ViecLam {
   nguoi_dang         TaiKhoan           @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NguoiDang_id")
   nha_tuyen_dung     NhaTuyenDung?      @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NhaTuyenDung_id")
   dia_diem           TinhThanh?         @relation(fields: [dia_diem_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_TinhThanh_id")
-  ds_dia_diem        ViecLamTinhThanh[]
   ds_thich           ViecLamYeuThich[]
   ds_tu_khoa         TuKhoaViecLam[]
 
@@ -458,19 +456,6 @@ model DonUngTuyen {
   @@index([created_at])
 }
 
-model ViecLamTinhThanh {
-  id            Int       @id @default(autoincrement())
-  viec_lam_id   Int
-  tinh_thanh_id Int
-  created_at    DateTime  @default(now())
-  is_deleted    Boolean   @default(false)
-  updated_at    DateTime  @default(now()) @updatedAt
-  tinh_thanh    TinhThanh @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLamTheoTinhThanh_TinhThanh_id")
-  viec_lam      ViecLam   @relation(fields: [viec_lam_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLamTheoTinhThanh_ViecLam_id")
-
-  @@index([created_at])
-}
-
 model CongTyYeuThich {
   id                Int          @id @default(autoincrement())
   ung_vien_id       Int
@@ -546,9 +531,13 @@ model DiaDiemNhaTuyenDung {
   id                Int          @id @default(autoincrement())
   tinh_thanh_id     Int
   nha_tuyen_dung_id Int
+  is_branch         Boolean      @default(false)
+  branch_name       String?
   created_at        DateTime     @default(now())
   is_deleted        Boolean      @default(false)
   updated_at        DateTime     @default(now()) @updatedAt
   nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "DiaDiemNTD_NTD_id")
   tinh_thanh        TinhThanh    @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DiaDiemNTD_TinhThanh_id")
+  
+  @@index([created_at])
 }

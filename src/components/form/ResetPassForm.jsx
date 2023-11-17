@@ -45,7 +45,6 @@ const ResetPassForm = () => {
                 description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />,
                 variant: 'success',
             })
-            router.push('/sign-in')
         } else {
             setLoading(false)
             toast({

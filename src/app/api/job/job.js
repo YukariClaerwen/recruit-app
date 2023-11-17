@@ -160,7 +160,7 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
         //     }
         // }))
         return {
-            data: await data,
+            data: data,
             pagination: {
                 total: count
             }

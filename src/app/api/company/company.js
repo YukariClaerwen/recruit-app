@@ -142,7 +142,7 @@ export const getCompany = cache(async (id) => {
 
         const jobs = await getJobsByCompany(parseInt(id))
 
-        console.log(jobs)
+        // console.log(jobs)
 
         const result = {
             id: company.nha_tuyen_dung_id,

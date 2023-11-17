@@ -105,7 +105,7 @@ const UserNav = () => {
                         : <></>
                     }
                     <DropdownDivider />
-                    <DropdownItem href="/dashboard/settings" className="flex items-center flex-row gap-2">
+                    <DropdownItem href="/dashboard/account" className="flex items-center flex-row gap-2">
                         <Gear size={20} weight="thin" />
                         Thiết lập
                     </DropdownItem>

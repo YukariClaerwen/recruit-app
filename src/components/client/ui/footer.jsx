@@ -32,9 +32,9 @@ export default async function Footer() {
                     <h5>Tầng 2 – Tòa nhà Emporium, 184 Lê Đại Hành, P. 15, Q. 11, TP. Hồ Chí Minh</h5>
                     <div className="mt-3">
                         <ul>
-                            <li className="foot-link"><Link href="/about" className="flex justify-items-start items-center ">Về chúng tôi</Link></li>
-                            <li className="foot-link"><Link href="/contact" className="flex justify-items-start items-center ">Liên hệ</Link></li>
-                            <li className="foot-link"><Link href="/faq" className="flex justify-items-start items-center ">Hỏi đáp</Link></li>
+                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Về chúng tôi</Link></li>
+                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Liên hệ</Link></li>
+                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Hỏi đáp</Link></li>
                         </ul>
                     </div>
                 </div>

@@ -128,8 +128,6 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
         ],
         is_deleted: false,
     }
-    const session = await getServerSession(authOptions);
-    console.log(session)
     try {
         // let take = 10;
         let skip = take ? (page - 1) * take : undefined;
@@ -185,7 +183,7 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
         //         isSaved: await checkFav(session?.user.email, job.id)
         //     }
         // }))
-        console.log(data)
+        // console.log(data)
         return {
             data: data,
             pagination: {
@@ -369,6 +367,8 @@ export const getJobById = cache(async (id, viewFor) => {
             where: { id: parseInt(id) }
         })
 
+        const save = await checkFav(job.id)
+
         const data = {
             id: job.id,
             major: viewFor === "client" ? job.nganh_nghe.ten_nganh : {
@@ -429,7 +429,8 @@ export const getJobById = cache(async (id, viewFor) => {
                     id: tag.tu_khoa.id,
                     name: tag.tu_khoa.ten_tu_khoa
                 }
-            })
+            }),
+            isSaved: save
 
         }
 

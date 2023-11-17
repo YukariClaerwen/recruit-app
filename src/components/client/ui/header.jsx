@@ -11,7 +11,7 @@ export default function Header() {
                 <WelcomeText />
             </div>
             <div className="basis-2/4 flex items-center justify-end">
-                <Link href="/employer"
+                <Link href="/"
                     className="link-logo-btn mr-2 font-logo"
                 >
                     Nhà tuyển dụng

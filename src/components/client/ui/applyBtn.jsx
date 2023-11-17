@@ -81,8 +81,8 @@ export const ApplyBtn = ({ title, id }) => {
 
   return (
     <>
-      <div className="flex justify-end gap-3 items-center sticky-bottom stiky bottom-50">
-        <JobFav />
+      <div className="flex justify-end gap-3 items-center ">
+        {/* <JobFav /> */}
         <Link onClick={handleShow}
           as={`${pathname}?showDialog=y&action=apply&id=${id}`}
           href={{

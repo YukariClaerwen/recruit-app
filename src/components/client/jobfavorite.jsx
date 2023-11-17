@@ -9,7 +9,7 @@ const JobFav = (props) => {
   const { toast } = useToast();
   const router = useRouter()
   const [isFavorite, setIsFavorite] = useState({
-    isAdded: props.job.isSaved,
+    isAdded: props.job.isSaved ? props.job.isSaved : false,
     isHovered: false,
   });
 

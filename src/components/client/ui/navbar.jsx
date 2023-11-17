@@ -98,7 +98,7 @@ export const Navbar2 = () => {
               <Navlink />
               <div className="lg:flex justify-center lg:justify-end items-center hidden">
 
-                <Link href="/employer" className="link-logo-btn mr-2 font-logo">
+                <Link href="/" className="link-logo-btn mr-2 font-logo">
                   Nhà tuyển dụng
                 </Link>
                 <UserDrop session={session} />
@@ -125,10 +125,10 @@ const Navlink = () => {
         <Link href="/companies" className={pathname == "/companies" ? "nav-link nav-style mr-5 p-2 active" : "nav-link nav-style mr-5 py-2"}>Danh sách công ty</Link>
       </li>
       <li className="nav-item" >
-        <Link href="/blogs" className={pathname == "/blogs" ? "nav-link nav-style mr-5 p-2 active" : "nav-link nav-style mr-5 py-2"}>Cẩm nang</Link>
+        <Link href="/" className={pathname == "/blogs" ? "nav-link nav-style mr-5 p-2 active" : "nav-link nav-style mr-5 py-2"}>Cẩm nang</Link>
       </li>
       <li className="nav-item" >
-        <Link href="/CVs" className={pathname == "/CVs" ? "nav-link nav-style mr-5 p-2 active" : "nav-link nav-style mr-5 py-2"}>CV xịn</Link>
+        <Link href="/" className={pathname == "/CVs" ? "nav-link nav-style mr-5 p-2 active" : "nav-link nav-style mr-5 py-2"}>CV xịn</Link>
       </li>
     </ul>
   );
@@ -174,7 +174,7 @@ export const NavbarEmployer = () => {
               <Navlink />
               <div className="lg:flex justify-center lg:justify-end items-center hidden">
 
-                <Link href="/employer" className="link-logo-btn mr-2 font-logo">
+                <Link href="/" className="link-logo-btn mr-2 font-logo">
                   Nhà tuyển dụng
                 </Link>
                 <a href="#" className="hidden lg:grid circle-btn circle-btn-gray rounded-circle justify-items-center ml-2">
@@ -254,6 +254,10 @@ const UserDrop = ({ session }) => {
                   <DropdownItem href="/dashboard/applied" className="flex items-center flex-row gap-2 justify-start">
                     <Files size={20} weight="thin" />
                     Việc làm đã ứng tuyển
+                  </DropdownItem>
+                  <DropdownItem href="/dashboard/savedJobs" className="flex items-center flex-row gap-2 justify-start">
+                    <Files size={20} weight="thin" />
+                    Việc làm yêu thich
                   </DropdownItem>
                 </>
               ) : <></>}

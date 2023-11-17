@@ -11,6 +11,7 @@ import Moment from "react-moment";
 import NumberFormat from "../format/number";
 import { FaRegBookmark } from "react-icons/fa6";
 import Link from "next/link";
+import JobFav from "./jobfavorite";
 
 const JobDetail = ({ data }) => {
 
@@ -23,8 +24,8 @@ const JobDetail = ({ data }) => {
     <div className="relative">
       <div className="job-head-block bgcolor-DarkPurple text-white relative z-10">
         <div className="px-3.5 pt-5 lg:px-20">
-          <div className="px-5 flex justify-between items-start">
-            <div className="">
+          <div className="px-5 flex grid grid-cols-4 gap-4">
+            <div className="col-span-3">
               <h3 className="font-logo">{data.title}</h3>
               <div className="flex justify-start gap-3 items-center">
                 {data.company?.logo ? (
@@ -45,8 +46,9 @@ const JobDetail = ({ data }) => {
                 </div>
               </div>
             </div>
-            <div className="sticky-top2 top-50">
-              <ApplyBtn title={data.title} id={data.id}/>
+            <div className="flex justify-end gap-3 items-center">
+              <JobFav job={data} />
+              <ApplyBtn title={data.title} id={data.id} />
             </div>
           </div>
         </div>
@@ -104,7 +106,7 @@ const JobDetail = ({ data }) => {
                     <Link href={`/jobs?tag=${tag.id}`} key={tag.id} className="text-sm link-style link-recommend mr-2">{tag.name}</Link>
                   ))
                 }
-                
+
               </p>
             </div>
           </div>

@@ -2,21 +2,29 @@ import React from "react";
 import Link from "next/link";
 
 import { IconGroup } from "./header";
+import { getMajors } from "@/app/api/job/major";
+import { getLocations } from "@/app/api/job/location";
+import Logo from "@/components/ui/logo";
 
 const copyrightYear = new Date().getFullYear();
 
-export default function Footer() {
+export default async function Footer() {
+
+    const majors = await getMajors(5);
+    const locations = await getLocations(5)
+
     return (
         <div className="footer px-3.5 lg:px-20 pt-20">
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-2 lg:gap-0">
                 <div className="basis-full lg:basis-2/4">
-                    <Link href="/" className="text-2xl lg:text-3xl big-yellow-logo mr-10 mb-0">
+                    <Logo href="/" variant="yellow" size="lg" />
+                    {/* <Link href="/" className="text-2xl lg:text-3xl big-yellow-logo mr-10 mb-0">
                         Ketnoi
                         <span>Vieclam</span>
-                    </Link>
+                    </Link> */}
                 </div>
                 <div className="basis-full lg:basis-2/4 flex items-center justify-end">
-                    <IconGroup/>
+                    <IconGroup />
                 </div>
             </div>
             <div className="flex flex-col lg:flex-row mt-4 gap-4 pb-5">
@@ -48,16 +56,14 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="basis-full lg:basis-1/4">
-                    <h5>Việc làm theo ngành nghề</h5>
+                    <h5>Việc làm theo khu vực</h5>
                     <div className="mt-3">
                         <ul className="mb-3">
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Hồ Chí Minh</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Hà Nội</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Hải Phòng</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Đồng Nai</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Bình Dương</Link></li>
+                            {locations.data.map(location =>
+                                <li key={location.id} className="foot-link"><Link href={`/jobs?location=${location.id}`} className="flex justify-items-start items-center ">{location.name}</Link></li>
+                            )}
                         </ul>
-                        <Link href="/">
+                        <Link href="/jobs">
                             <div className="circle-arrow-btn flex justify-items-start gap-1">
                                 Xem tất cả
                             </div>
@@ -65,16 +71,15 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="basis-full lg:basis-1/4">
-                    <h5>Việc làm theo khu vực</h5>
+                    <h5>Việc làm theo ngành nghề</h5>
                     <div className="mt-3">
                         <ul className="mb-3">
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Kế toán</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Ngân hàng</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">IT - Phần mềm</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">IT - Phần cứng</Link></li>
-                            <li className="foot-link"><Link href="/" className="flex justify-items-start items-center ">Thiết kế</Link></li>
+                            {majors.map(major =>
+                                <li key={major.id} className="foot-link"><Link href={`/jobs?major=${major.id}`} className="flex justify-items-start items-center ">{major.name}</Link></li>
+                            )}
+
                         </ul>
-                        <Link href="/">
+                        <Link href="/jobs">
                             <div className="circle-arrow-btn flex justify-items-start gap-1">
                                 Xem tất cả
                             </div>

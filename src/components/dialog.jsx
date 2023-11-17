@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useRef, useEffect, useState } from "react";
 import { FormProvider } from "react-hook-form";
 
-export default function Dialog({ title, onClose, onOk, children, onShow, onSave, form }) {
+export default function Dialog({ title, onClose, onOk, children, onShow, onSave, form, loading }) {
 
     const searchParams = useSearchParams();
     const dialogRef = useRef(null, searchParams);
@@ -32,11 +32,11 @@ export default function Dialog({ title, onClose, onOk, children, onShow, onSave,
     }
 
     const clickOk = () => {
-        onOk();
+        // onOk();
         closeDialog();
     }
     const clickSave = async () => {
-        await onSave();
+        // await onSave();
         closeDialog();
     }
 
@@ -61,7 +61,7 @@ export default function Dialog({ title, onClose, onOk, children, onShow, onSave,
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" onClick={clickOk}>Bỏ qua</button>
-                                        <button type="submit" className="btn btn-mainCl">{btnValue}</button>
+                                        <button type="submit" className="btn btn-mainCl" >{btnValue}</button>
                                     </div>
                                 </form>
                             </FormProvider>

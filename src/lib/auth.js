@@ -30,21 +30,21 @@ function CustomPrismaAdapter(p) {
 const setUserRole = async (id) => {
     let userRole = "user";
     const roleAdmin = await db.quanTri.findUnique({
-        where: { tai_khoan_id: id }
+        where: { tai_khoan_id: id, is_deleted: false}
     });
     if (roleAdmin) {
         userRole = "admin";
         return userRole
     }
     const roleConsultant = await db.tuVanVien.findUnique({
-        where: { tai_khoan_id: id }
+        where: { tai_khoan_id: id, is_deleted: false }
     })
     if (roleConsultant) {
         userRole = "consultant";
         return userRole
     }
     const roleRecruiter = await db.nhaTuyenDung.findUnique({
-        where: { tai_khoan_id: id }
+        where: { tai_khoan_id: id, is_deleted: false }
     })
     if (roleRecruiter) {
         userRole = "recruiter";

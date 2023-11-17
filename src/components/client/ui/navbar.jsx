@@ -8,7 +8,7 @@ import { signOut, useSession } from "next-auth/react";
 import { Navbar as ReactNavbar, Button, CloseButton, Container, NavbarBrand, NavbarToggle, NavbarOffcanvas, OffcanvasHeader, OffcanvasTitle, OffcanvasBody, Nav, NavLink, NavDropdown, DropdownItem, DropdownDivider, Dropdown, DropdownToggle, DropdownMenu } from "react-bootstrap";
 import Logo from "@/components/ui/logo";
 import Image from "next/image";
-import { FileText, Files, Gear, SignOut, Sliders, UserCircle, UserCircleGear } from "@phosphor-icons/react/dist/ssr";
+import { FilePlus, FileText, Files, Gear, SignOut, Sliders, UserCircle, UserCircleGear } from "@phosphor-icons/react/dist/ssr";
 // import bootstrap from "bootstrap";
 // import { useRouter } from "next/router";
 
@@ -24,17 +24,8 @@ const Navbar = () => {
   //   bsOffcanvas.hide();
   // }
 
-  const router = useRouter();
   const { data: session } = useSession();
-  const pathname = usePathname();
 
-  const handleSignOut = async () => {
-    await signOut();
-    if(session?.user.role == "admin")
-        router.push("/auth-admin/sign-in");
-    else
-        router.push(pathname);
-}
 
   return (
     <div className="sticky top-[-1px] z-30 header">
@@ -57,64 +48,8 @@ const Navbar = () => {
               <Navlink />
 
               <div className="flex justify-center lg:justify-end items-center">
-                {session?.user ? (
-                  <>
-                    <Dropdown as="li" className="nav-item px-3 flex justify-center items-stretch self-stretch ">
-                      <DropdownToggle as="a" id="dropdown-profile" href="#" className="nav-link flex flex-row items-center gap-2">
-                        {session?.user.image ? (
-                          <Image
-                            src={session.user.image}
-                            alt="profile"
-                            width={30}
-                            height={30}
-                            priority
-                            className="rounded-full"
-                          />
-                        ) : (<UserCircle size={30} weight="thin" />)}
-                        <span className="nav-profile-name">{session?.user.username || session?.user.name}</span>
-                      </DropdownToggle>
+                <UserDrop session={session} />
 
-                      <DropdownMenu className="dropdown-menu-right navbar-dropdown" align="end">
-                        {session?.user.role == "admin" ? (
-                          <DropdownItem href="/admin" className="flex items-center flex-row gap-2 justify-start">
-                            <Sliders size={20} weight="thin" />
-                            Bảng quản trị
-                          </DropdownItem>
-                        ) : (<></>)}
-                        {session?.user.role == "user" ? (
-                          <>
-                            <DropdownItem href="/dashboard" className="flex items-center flex-row gap-2 justify-start">
-                              <FileText size={20} weight="thin" />
-                              Hồ sơ
-                            </DropdownItem>
-                            <DropdownItem href="/dashboard/applied" className="flex items-center flex-row gap-2 justify-start">
-                              <Files size={20} weight="thin" />
-                              Việc làm đã ứng tuyển
-                            </DropdownItem>
-                          </>
-                        ) : <></>}
-                        <DropdownDivider />
-                        <DropdownItem href="/dashboard/account" className="flex items-center flex-row gap-2 justify-start">
-                          <UserCircleGear size={20} weight="thin" />
-                          Tài khoản
-                        </DropdownItem>
-                        <DropdownItem as={Button} onClick={handleSignOut} className="flex items-center flex-row gap-2 justify-start">
-                          <SignOut size={20} weight="thin" />
-                          Đăng xuất
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    {/* <a href="#" className="hidden lg:grid circle-btn circle-btn-gray rounded-circle justify-items-center ml-2">
-                      <div className="svg-container"><AiOutlineBell /></div>
-                    </a> */}
-
-                  </>
-                ) : (
-                  <>
-                    <Link href="/sign-in" className="rounded-full round-btn round-btn-border ml-5">Đăng nhập</Link>
-                    <Link href="/sign-up" className="rounded-full round-btn ml-3">Đăng ký</Link>
-                  </>
-                )}
               </div>
             </OffcanvasBody>
           </NavbarOffcanvas>
@@ -166,24 +101,7 @@ export const Navbar2 = () => {
                 <Link href="/employer" className="link-logo-btn mr-2 font-logo">
                   Nhà tuyển dụng
                 </Link>
-                {session?.user ? (
-                  <>
-                    <a href="#" className="hidden lg:grid circle-btn circle-btn-gray rounded-circle justify-items-center ml-2">
-                      <div className="svg-container"><AiOutlineBell /></div>
-                    </a>
-                    <Button onClick={handleSignOut} className="ml-3">
-                      <div className="circle-arrow-btn flex justify-items-start gap-1 uppercase">
-                        Đăng xuất
-                      </div>
-                    </Button>
-                  </>
-                ) : (
-                  <Link href="/sign-in" className="ml-3">
-                    <div className="circle-arrow-btn flex justify-items-start gap-1 uppercase">
-                      Đăng nhập
-                    </div>
-                  </Link>
-                )}
+                <UserDrop session={session} />
               </div>
               <div className="block lg:hidden">
                 <BtnGroup />
@@ -278,3 +196,90 @@ export const NavbarEmployer = () => {
     </div>
   );
 };
+
+
+const UserDrop = ({ session }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleSignOut = async () => {
+    await signOut();
+    if (session?.user.role == "admin")
+      router.push("/auth-admin/sign-in");
+    else
+      router.push(pathname);
+  }
+  return (
+    <>
+      {session?.user ? (
+        <>
+          <Dropdown as="li" className="nav-item px-3 flex justify-center items-stretch self-stretch ">
+            <DropdownToggle as="a" id="dropdown-profile" href="#" className="nav-link flex flex-row items-center gap-2">
+              {session?.user.image ? (
+                <Image
+                  src={session.user.image}
+                  alt="profile"
+                  width={30}
+                  height={30}
+                  priority
+                  className="rounded-full"
+                />
+              ) : (<UserCircle size={30} weight="thin" />)}
+              <span className="nav-profile-name">{session?.user.username || session?.user.name}</span>
+            </DropdownToggle>
+
+            <DropdownMenu className="dropdown-menu-right navbar-dropdown" align="end">
+              {session?.user.role == "admin" ? (
+                <>
+                  <DropdownItem href="/admin" className="flex items-center flex-row gap-2 justify-start">
+                    <Sliders size={20} weight="thin" />
+                    Bảng quản trị
+                  </DropdownItem>
+                  <DropdownItem href="/admin/jobs" className="flex items-center flex-row gap-2 justify-start">
+                    <Files size={20} weight="thin" />
+                    Tuyển dụng
+                  </DropdownItem>
+                  <DropdownItem href="/admin/jobs/post" className="flex items-center flex-row gap-2 justify-start">
+                    <FilePlus size={20} weight="thin" />
+                    Đăng tuyển dụng
+                  </DropdownItem>
+                </>
+              ) : (<></>)}
+              {session?.user.role == "user" ? (
+                <>
+                  <DropdownItem href="/dashboard" className="flex items-center flex-row gap-2 justify-start">
+                    <FileText size={20} weight="thin" />
+                    Hồ sơ
+                  </DropdownItem>
+                  <DropdownItem href="/dashboard/applied" className="flex items-center flex-row gap-2 justify-start">
+                    <Files size={20} weight="thin" />
+                    Việc làm đã ứng tuyển
+                  </DropdownItem>
+                </>
+              ) : <></>}
+              <DropdownDivider />
+              <DropdownItem href="/dashboard/account" className="flex items-center flex-row gap-2 justify-start">
+                <UserCircleGear size={20} weight="thin" />
+                Tài khoản
+              </DropdownItem>
+              <DropdownItem as={Button} onClick={handleSignOut} className="flex items-center flex-row gap-2 justify-start">
+                <SignOut size={20} weight="thin" />
+                Đăng xuất
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          {/* <a href="#" className="hidden lg:grid circle-btn circle-btn-gray rounded-circle justify-items-center ml-2">
+                      <div className="svg-container"><AiOutlineBell /></div>
+                    </a> */}
+
+        </>
+      ) : (
+        <>
+          <Link href="/sign-in" className="rounded-full round-btn round-btn-border ml-5">Đăng nhập</Link>
+          <Link href="/sign-up" className="rounded-full round-btn ml-3">Đăng ký</Link>
+        </>
+      )}
+
+    </>
+  )
+}

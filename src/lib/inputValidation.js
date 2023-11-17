@@ -15,6 +15,14 @@ export const addOneFieldYup = {
             .required('Vui lòng nhập thông tin.')
     })
 }
+
+export const selectOneFieldYup = {
+    schema: yup.object().shape({
+        selectField: yup
+            .mixed()
+            .required('Vui lòng chọn thông tin.')
+    })
+}
 export const resetPassYup = {
     schema: yup.object().shape({
         email: yup

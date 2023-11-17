@@ -11,13 +11,12 @@ import Moment from "react-moment";
 import NumberFormat from "../format/number";
 import { FaRegBookmark } from "react-icons/fa6";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 const JobDetail = ({ data }) => {
 
   const html = (strs) => {
-    const sentences = strs.split(/\r\n|\r|\n/gi).map(s => `<p>${s}</p>`);
-    return sentences.join('').replaceAll("<p></p>", "<p class='my-4'></p>");
+    const sentences = strs?.split(/\r\n|\r|\n/gi).map(s => `<p>${s}</p>`);
+    return sentences?.join('').replaceAll("<p></p>", "<p class='my-4'></p>");
   }
 
   return (
@@ -28,14 +27,14 @@ const JobDetail = ({ data }) => {
             <div className="">
               <h3 className="font-logo">{data.title}</h3>
               <div className="flex justify-start gap-3 items-center">
-                {data.company.logo ? (
+                {data.company?.logo ? (
                   <div className="company-logo">
 
                   </div>
                 ) : <></>}
 
                 <div>
-                  {data.company ? <p>{data.company.name}</p> : <></>}
+                  {data.company ? <Link href={`/companies/${data.company.id}?title=${data.company.name}`} >{data.company.name}</Link> : <></>}
                   <p className="flex gap-1 justify-start items-center"><PiMoneyThin size="24" color="#FFBB58" />
                     {(data.salary) ? (
                       <>
@@ -69,7 +68,7 @@ const JobDetail = ({ data }) => {
               </div>
               <div className="mt-3" dangerouslySetInnerHTML={{ __html: html(data.requirements) }} />
             </div>
-            {data.company.benefits ? (
+            {data.company?.benefits ? (
               <div className="job-detail-mainItem mb-5">
                 <div className="mt-3 flex justify-start items-center gap-3 mb-1">
                   <PiHandCoinsThin size="35" color="#7B27AB" />
@@ -84,7 +83,7 @@ const JobDetail = ({ data }) => {
               </div>
             ) : <></>}
             {
-              data.company.adresses ? (
+              data.company?.adresses ? (
                 <div className="job-detail-mainItem mb-5">
                   <div className="mt-3 flex justify-start items-center gap-3">
                     <PiMapPinLineThin size="35" color="#7B27AB" />
@@ -101,7 +100,7 @@ const JobDetail = ({ data }) => {
                 <FaRegBookmark className="inline mr-1" />
                 <span className="font-logo mr-3">Từ khóa: </span>
                 {
-                  data.tags.map(tag => (
+                  data.tags?.map(tag => (
                     <Link href={`/jobs?tag=${tag.id}`} key={tag.id} className="text-sm link-style link-recommend mr-2">{tag.name}</Link>
                   ))
                 }
@@ -141,7 +140,7 @@ const JobDetail = ({ data }) => {
                   </div>
                 </li>
                 {
-                  data.skill ? (
+                  data?.skill ? (
                     <li className="py-3 flex justify-start items-center gap-x-4">
                       <PiShootingStarThin size="40" color="#606060" />
                       <div>
@@ -156,7 +155,7 @@ const JobDetail = ({ data }) => {
                   <div>
                     <p>Ngôn ngữ CV</p>
                     <p>
-                      {data.cvLangs.join(", ")}
+                      {data.cvLangs?.join(", ")}
                     </p>
                   </div>
                 </li>

@@ -18,7 +18,7 @@ import Alert from "@/components/alert";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
-  const data = await getJobs();
+  const data = await getJobs(6);
   const majors = await getMajors(12);
   const tags = await getTags(5)
 

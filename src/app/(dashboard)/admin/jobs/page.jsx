@@ -8,7 +8,7 @@ const page = async ({ searchParams }) => {
     let page = 1;
     if (searchParams?.page) page = searchParams?.page;
     
-    const data = await getJobs(page);
+    const data = await getJobs(10, page);
     const pages = Math.ceil((await data.pagination.total / 10))
     const links = (
         <>

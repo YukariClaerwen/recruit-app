@@ -167,6 +167,7 @@ model NhaTuyenDung {
   updated_at        DateTime                @updatedAt
   tinh_thanh_id     Int?
   tu_van_vien_id    Int?
+  images            Json?                   @db.JsonB
   ds_thich          CongTyYeuThich[]
   ds_don_ung_tuyen  DonUngTuyen[]
   ds_nganh          NganhNgheNhaTuyenDung[]
@@ -252,47 +253,47 @@ model TinhThanh {
 }
 
 model ViecLam {
-  id                 Int                @id @default(autoincrement())
+  id                 Int               @id @default(autoincrement())
   nganh_nghe_id      Int?
   cap_bac_id         Int?
   tai_khoan_id       Int
   nha_tuyen_dung_id  Int?
-  chuc_danh          String?            @db.VarChar(256)
+  chuc_danh          String?           @db.VarChar(256)
   linh_vuc_id        Int?
   dia_diem_id        Int?
-  loai_viec_lam      String?            @db.Citext
+  loai_viec_lam      String?           @db.Citext
   mo_ta              String?
   yeu_cau            String?
   luong_toi_thieu    Decimal?
   luong_toi_da       Decimal?
-  luong_thuong_luong Boolean?           @default(false)
-  luong_loai_tien    Int?               @default(0)
-  thoi_gian_lam_viec String?            @db.VarChar(256)
-  nguoi_lien_he      String?            @db.VarChar(256)
-  an_lien_he         Boolean?           @default(false)
-  ds_email_cv        String?            @db.VarChar(256)
-  an_danh            Boolean?           @default(false)
+  luong_thuong_luong Boolean?          @default(false)
+  luong_loai_tien    Int?              @default(0)
+  thoi_gian_lam_viec String?           @db.VarChar(256)
+  nguoi_lien_he      String?           @db.VarChar(256)
+  an_lien_he         Boolean?          @default(false)
+  ds_email_cv        String?           @db.VarChar(256)
+  an_danh            Boolean?          @default(false)
   han_nhan_ho_so     DateTime?
   thoi_gian_dang     DateTime?
-  luot_xem           Int?               @default(0)
+  luot_xem           Int?              @default(0)
   so_luong           Int?
   tu_tuoi            Int?
   den_tuoi           Int?
   ngon_ngu_id        Int?
-  trang_thai         Json?              @db.JsonB
-  thao_tac           Json?              @db.JsonB
-  ngon_ngu_ho_so     Json?              @db.JsonB
-  created_at         DateTime           @default(now())
-  is_deleted         Boolean            @default(false)
-  updated_at         DateTime           @default(now()) @updatedAt
+  trang_thai         Json?             @db.JsonB
+  thao_tac           Json?             @db.JsonB
+  ngon_ngu_ho_so     Json?             @db.JsonB
+  created_at         DateTime          @default(now())
+  is_deleted         Boolean           @default(false)
+  updated_at         DateTime          @default(now()) @updatedAt
   ds_don_ung_tuyen   DonUngTuyen[]
-  cap_bac            CapBac?            @relation(fields: [cap_bac_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_CapBac_id")
-  linh_vuc           LinhVuc?           @relation(fields: [linh_vuc_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_LinhVuc_id")
-  nganh_nghe         NganhNghe?         @relation(fields: [nganh_nghe_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NganhNghe_id")
-  ngon_ngu           NgonNgu?           @relation(fields: [ngon_ngu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NgonNgu_id")
-  nguoi_dang         TaiKhoan           @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NguoiDang_id")
-  nha_tuyen_dung     NhaTuyenDung?      @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NhaTuyenDung_id")
-  dia_diem           TinhThanh?         @relation(fields: [dia_diem_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_TinhThanh_id")
+  cap_bac            CapBac?           @relation(fields: [cap_bac_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_CapBac_id")
+  linh_vuc           LinhVuc?          @relation(fields: [linh_vuc_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_LinhVuc_id")
+  nganh_nghe         NganhNghe?        @relation(fields: [nganh_nghe_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NganhNghe_id")
+  ngon_ngu           NgonNgu?          @relation(fields: [ngon_ngu_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NgonNgu_id")
+  nguoi_dang         TaiKhoan          @relation(fields: [tai_khoan_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NguoiDang_id")
+  nha_tuyen_dung     NhaTuyenDung?     @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_NhaTuyenDung_id")
+  dia_diem           TinhThanh?        @relation(fields: [dia_diem_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ViecLam_TinhThanh_id")
   ds_thich           ViecLamYeuThich[]
   ds_tu_khoa         TuKhoaViecLam[]
 
@@ -538,6 +539,6 @@ model DiaDiemNhaTuyenDung {
   updated_at        DateTime     @default(now()) @updatedAt
   nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "DiaDiemNTD_NTD_id")
   tinh_thanh        TinhThanh    @relation(fields: [tinh_thanh_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "DiaDiemNTD_TinhThanh_id")
-  
+
   @@index([created_at])
 }

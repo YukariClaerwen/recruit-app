@@ -101,23 +101,29 @@ const sortSalary = async (jobs, key) => {
 }
 
 
-export const getJobs = cache(async (page = 1, sort, tag, major) => {
+export const getJobs = cache(async (take, page = 1, sort, tag, major, company) => {
     const sortBy = sort == "asc" ? sortAsc
         : sort == "desc" ? sortByDefault
             : sort == "salary" ? sortSal
                 : sortByDefault
     const where = {
-        nganh_nghe_id: major,
-        ds_tu_khoa: {
-            some: {
-                tu_khoa_id: tag
-            }
-        }
+        OR: [
+            { nganh_nghe_id: major },
+            {
+                ds_tu_khoa: {
+                    some: {
+                        tu_khoa_id: tag
+                    }
+                }
+            },
+            { nha_tuyen_dung_id: parseInt(company), }
+        ],
+        is_deleted: false,
     }
 
     try {
-        let take = 10;
-        let skip = (page - 1) * take;
+        // let take = 10;
+        let skip = take ? (page - 1) * take : undefined;
 
         const [jobs, count] = await db.$transaction([
             db.viecLam.findMany({
@@ -157,10 +163,14 @@ export const searchJobs = cache(async (key, location, page, sort) => {
     try {
         let take = 10;
         let skip = (page - 1) * take;
-        // const locArr = []
-        // if (location != null && location != "all") {
-        //     locArr.push(parseInt(location));
-        // }
+        let locArr = []
+        if (location != null && location != "all" && !Array.isArray(location)) {
+            locArr.push(parseInt(location));
+        } else if (Array.isArray(location)) {
+            locArr = location.map(l => {
+                return parseInt(l)
+            })
+        }
 
         let query = {}
         const keys = [
@@ -180,12 +190,16 @@ export const searchJobs = cache(async (key, location, page, sort) => {
 
         if (location == "all" || location == null) {
             query = {
-                OR: keys
+                OR: keys,
+                is_deleted: false,
             }
         } else {
             query = {
                 OR: keys,
-                dia_diem_id: parseInt(location),
+                dia_diem_id: {
+                    in: locArr
+                },
+                is_deleted: false,
                 // ds_dia_diem: {
                 //     some: {
                 //         tinh_thanh_id: {
@@ -220,6 +234,7 @@ export const searchJobs = cache(async (key, location, page, sort) => {
             }
         }
     } catch (err) {
+        console.log(err.message)
         return ({ message: err, status: 500 });
     }
 })
@@ -270,7 +285,6 @@ export const getJobById = cache(async (id, viewFor) => {
                 },
                 _count: {
                     select: {
-                        ds_dia_diem: true,
                         ds_thich: true,
                         ds_tu_khoa: true
                     }
@@ -345,6 +359,7 @@ export const getJobById = cache(async (id, viewFor) => {
 
         return data;
     } catch (err) {
+        console.log(err.message)
         return ({ message: err.message, status: 500 });
     }
 })
@@ -450,7 +465,7 @@ export const updateJob = cache(async (req) => {
                 nha_tuyen_dung_id: frmJobCompany.value,
             }
         })
-        
+
         return {
             data: editJob,
             message: "Việc làm đã cập nhật thành công.",

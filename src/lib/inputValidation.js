@@ -92,7 +92,14 @@ export const registerYup = {
         cPassword: ''
     }
 }
-export function postJobYup() {
+export function postJobYup(job) {
+    const tags = job ? job.tags.map(t => {
+        return {
+            value: t.id,
+            label: t.name,
+        }
+    }) : null;
+
     const res = {
         schema: yup.object().shape({
             frmJobTitle: yup.string().required('Vui lòng nhập thông tin.'),
@@ -100,8 +107,7 @@ export function postJobYup() {
             frmJobType: yup.string().required('Vui lòng nhập thông tin.'),
             frmJobMajor: yup.mixed().required("Vui lòng chọn ngành nghề"),
             frmJobCompField: yup.mixed().required('Vui lòng chọn lĩnh vực.'),
-            frmJobLocation: yup.array()
-                .max(3, "Chỉ được chọn tối đa 3 địa điểm").min(1, "Vui lòng chọn địa điểm"),
+            frmJobLocation: yup.mixed().required('Vui lòng chọn địa điểm.'),
             frmJobDes: yup.string().required('Vui lòng nhập thông tin.'),
             frmJobReq: yup.string().required('Vui lòng nhập thông tin.'),
             frmJobSalaryMin: yup.string().required('Vui lòng nhập thông tin.'),
@@ -113,30 +119,44 @@ export function postJobYup() {
             frmJobEmailCV: yup.string().required('Vui lòng nhập thông tin.'),
             frmJobSalaryCurrency: yup.mixed()
                 .required("Vui lòng chọn loại tiền tệ"),
-            frmJobTags: yup.array()
-                .max(5, "Chỉ được nhập tối đa 5 từ khóa").min(1, "Vui lòng nhập từ khóa"),
+            frmJobTags: yup.array().min(1, "Vui lòng nhập từ khóa"),
             frmJobCompany: yup.mixed().required('Vui lòng chọn công ty đăng tuyển.'),
         }).required("Vui lòng nhập thông tin."),
         default: {
-            frmJobTitle: "",
-            frmJobLevel: undefined,
-            frmJobType: "",
-            frmJobMajor: undefined,
-            frmJobCompField: undefined,
-            frmJobLocation: [],
-            frmJobDes: "",
-            frmJobReq: "",
-            frmJobSalaryMin: 100,
-            frmJobSalaryMax: 200,
-            frmJobSalaryCurrency: { value: "2", label: "USD" },
-            frmJobSalaryHide: false,
-            frmJobTags: [],
-            frmJobCVLanguage: [],
-            frmJobContact: "",
-            frmJobContactHide: false,
-            frmJobEmailCV: "",
-            frmJobHideCompany: false,
-            frmJobCompany: undefined,
+            frmJobTitle: job ? job.title : "",
+            frmJobLevel: job ? {
+                value: job.level.id,
+                label: job.level.name,
+            } : undefined,
+            frmJobType: job ? job.type : "",
+            frmJobMajor: job ? {
+                value: job.major.id,
+                label: job.major.name
+            } : undefined,
+            frmJobCompField: job ? {
+                value: job.industry.id,
+                label: job.industry.name,
+            } : undefined,
+            frmJobLocation: job ? (job.location ? {
+                value: job.location.id,
+                label: job.location.name,
+            } : undefined) : undefined,
+            frmJobDes: job ? job.descriptions : "",
+            frmJobReq: job ? job.requirements : "",
+            frmJobSalaryMin:  job ? job.salary.min : 100,
+            frmJobSalaryMax:  job ? job.salary.max : 200,
+            frmJobSalaryCurrency: job ? {value: job.salary.currency, label: job.salary.currency == "1" ? "VND" : "USD"} : { value: "2", label: "USD" },
+            frmJobSalaryHide: job ? job.salary.hide : false,
+            frmJobTags: job ? tags : [],
+            frmJobCVLanguage: job ? job.cvLangs : [],
+            frmJobContact: job ? job.contact.person : "",
+            frmJobContactHide: job ? job.contact.hide : false,
+            frmJobEmailCV: job ? job.contact.email : "",
+            frmJobHideCompany: job ? job.company.hide : false,
+            frmJobCompany: job ? {
+                value: job.company.id,
+                label: job.company.name
+            } : undefined,
         }
     }
     return res;

@@ -12,18 +12,17 @@ const selectJobList = {
     luong_thuong_luong: true,
     luong_loai_tien: true,
     luot_xem: true,
+    dia_diem: {
+        select: {
+            id: true,
+            ten_tinh_thanh: true,
+        }
+    },
     created_at: true,
     nha_tuyen_dung: {
         select: {
             ten_cong_ty: true,
             logo: true
-        }
-    },
-    ds_dia_diem: {
-        select: {
-            tinh_thanh: {
-                select: { ten_tinh_thanh: true }
-            }
         }
     },
     ds_tu_khoa: {
@@ -47,9 +46,10 @@ const returnJobsItem = (jobs) => {
                 name: item.nha_tuyen_dung.ten_cong_ty,
                 logo: item.nha_tuyen_dung.logo,
             },
-            locations: item.ds_dia_diem.map(loc => {
-                return loc['tinh_thanh']['ten_tinh_thanh']
-            }),
+            location: {
+                id: item.dia_diem.id,
+                name: item.dia_diem.ten_tinh_thanh,
+            },
             tags: item.ds_tu_khoa.map(tag => {
                 return tag['tu_khoa']['ten_tu_khoa']
             })
@@ -83,7 +83,7 @@ const sortSal = { luong_thuong_luong: 'asc', }
 const sortSalary = async (jobs, key) => {
     const rate = { usd: 1, vnd: 24000 }
     if (key == "salary") {
-        const newJobs =  await jobs.sort((a, b) => {
+        const newJobs = await jobs.sort((a, b) => {
             const aExchange = (a.luong_loai_tien == 2 ? a.luong_toi_da * rate.vnd : a.luong_toi_da);
             const bExchange = (b.luong_loai_tien == 2 ? b.luong_toi_da * rate.vnd : b.luong_toi_da);
             return (aExchange - bExchange);
@@ -103,9 +103,9 @@ const sortSalary = async (jobs, key) => {
 
 export const getJobs = cache(async (page = 1, sort, tag, major) => {
     const sortBy = sort == "asc" ? sortAsc
-                 : sort == "desc" ? sortByDefault
-                 : sort == "salary" ? sortSal
-                 : sortByDefault
+        : sort == "desc" ? sortByDefault
+            : sort == "salary" ? sortSal
+                : sortByDefault
     const where = {
         nganh_nghe_id: major,
         ds_tu_khoa: {
@@ -135,7 +135,7 @@ export const getJobs = cache(async (page = 1, sort, tag, major) => {
         sortSalary(await jobs, sort)
 
         // console.log(await sortBySalary)
-
+        // console.log(jobs)
         const data = returnJobsItem(await jobs)
         return {
             data: data,
@@ -149,135 +149,18 @@ export const getJobs = cache(async (page = 1, sort, tag, major) => {
     }
 })
 
-export const getJobById = cache(async (id) => {
-    try {
-        const job = await db.viecLam.findUnique({
-            select: {
-                id: true,
-                nganh_nghe: { select: { ten_nganh: true, } },
-                cap_bac: { select: { ten_cap_bac: true } },
-                nha_tuyen_dung: {
-                    select: {
-                        nha_tuyen_dung_id: true,
-                        ten_cong_ty: true,
-                        logo: true
-                    }
-                },
-                chuc_danh: true,
-                linh_vuc: { select: { ten_linh_vuc: true } },
-                loai_viec_lam: true,
-                mo_ta: true,
-                yeu_cau: true,
-                luong_toi_thieu: true,
-                luong_toi_da: true,
-                luong_thuong_luong: true,
-                luong_loai_tien: true,
-                thoi_gian_lam_viec: true,
-                nguoi_lien_he: true,
-                an_lien_he: true,
-                ds_email_cv: true,
-                an_danh: true,
-                han_nhan_ho_so: true,
-                luot_xem: true,
-                tu_tuoi: true,
-                den_tuoi: true,
-                trang_thai: true,
-                ngon_ngu_ho_so: true,
-                created_at: true,
-                ds_dia_diem: {
-                    select: {
-                        tinh_thanh: {
-                            select: { ten_tinh_thanh: true }
-                        }
-                    }
-                },
-                ds_tu_khoa: {
-                    select: {
-                        tu_khoa: {
-                            select: { id: true, ten_tu_khoa: true }
-                        }
-                    }
-                },
-                _count: {
-                    select: {
-                        ds_dia_diem: true,
-                        ds_thich: true,
-                        ds_tu_khoa: true
-                    }
-                }
-            },
-            where: { id: parseInt(id) }
-        })
-
-        const data = {
-            id: job.id,
-            major: job.nganh_nghe.ten_nganh,
-            level: job.cap_bac.ten_cap_bac,
-            ...(job.an_danh ? { company: false } : {
-                company: {
-                    id: job.nha_tuyen_dung.nha_tuyen_dung_id,
-                    name: job.nha_tuyen_dung.ten_cong_ty,
-                    logo: job.nha_tuyen_dung.logo
-                },
-            }),
-            title: job.chuc_danh,
-            industry: job.linh_vuc.ten_linh_vuc,
-            type: job.loai_viec_lam,
-            descriptions: job.mo_ta,
-            requirements: job.yeu_cau,
-            ...(job.luong_thuong_luong ? { salary: false } : {
-                salary: {
-                    min: job.luong_toi_thieu.toFixed(0).toString(),
-                    max: job.luong_toi_da.toFixed(0).toString(),
-                    currency: job.luong_loai_tien,
-                }
-            }),
-            workingTime: job.thoi_gian_lam_viec,
-            ...(job.an_lien_he ? { contact: false } : {
-                contact: {
-                    person: job.nguoi_lien_he,
-                    email: job.ds_email_cv,
-                }
-            }),
-            closeDate: job.han_nhan_ho_so,
-            views: job.luot_xem,
-            fromAge: job.tu_tuoi,
-            toAge: job.den_tuoi,
-            state: job.trang_thai,
-            cvLangs: job.ngon_ngu_ho_so.map(lang => {
-                return lang["label"]
-            }),
-            postDate: job.created_at,
-            locations: job.ds_dia_diem.map(loc => {
-                return loc["tinh_thanh"]["ten_tinh_thanh"]
-            }),
-            tags: job.ds_tu_khoa.map(tag => {
-                return {
-                    id: tag.tu_khoa.id,
-                    name: tag.tu_khoa.ten_tu_khoa
-                }
-            })
-
-        }
-
-        return data;
-    } catch (err) {
-        return ({ message: err, status: 500 });
-    }
-})
-
 export const searchJobs = cache(async (key, location, page, sort) => {
     const sortBy = sort == "asc" ? sortAsc
-                 : sort == "desc" ? sortByDefault
-                 : sort == "salary" ? sortSal
-                 : sortByDefault
+        : sort == "desc" ? sortByDefault
+            : sort == "salary" ? sortSal
+                : sortByDefault
     try {
         let take = 10;
         let skip = (page - 1) * take;
-        const locArr = []
-        if (location != null && location != "all") {
-            locArr.push(parseInt(location));
-        }
+        // const locArr = []
+        // if (location != null && location != "all") {
+        //     locArr.push(parseInt(location));
+        // }
 
         let query = {}
         const keys = [
@@ -295,20 +178,21 @@ export const searchJobs = cache(async (key, location, page, sort) => {
             }
         ]
 
-        if (location == "all") {
+        if (location == "all" || location == null) {
             query = {
                 OR: keys
             }
         } else {
             query = {
                 OR: keys,
-                ds_dia_diem: {
-                    some: {
-                        tinh_thanh_id: {
-                            in: locArr
-                        }
-                    }
-                },
+                dia_diem_id: parseInt(location),
+                // ds_dia_diem: {
+                //     some: {
+                //         tinh_thanh_id: {
+                //             in: locArr
+                //         }
+                //     }
+                // },
             }
         }
 
@@ -340,6 +224,240 @@ export const searchJobs = cache(async (key, location, page, sort) => {
     }
 })
 
-export const searchJobsByTag = cache(async() => {
 
+export const getJobById = cache(async (id, viewFor) => {
+    try {
+        const job = await db.viecLam.findUnique({
+            select: {
+                id: true,
+                nganh_nghe: { select: { id: true, ten_nganh: true, } },
+                cap_bac: { select: { id: true, ten_cap_bac: true } },
+                nha_tuyen_dung: {
+                    select: {
+                        nha_tuyen_dung_id: true,
+                        ten_cong_ty: true,
+                        logo: true
+                    }
+                },
+                chuc_danh: true,
+                linh_vuc: { select: { id: true, ten_linh_vuc: true } },
+                dia_diem: { select: { id: true, ten_tinh_thanh: true } },
+                loai_viec_lam: true,
+                mo_ta: true,
+                yeu_cau: true,
+                luong_toi_thieu: true,
+                luong_toi_da: true,
+                luong_thuong_luong: true,
+                luong_loai_tien: true,
+                thoi_gian_lam_viec: true,
+                nguoi_lien_he: true,
+                an_lien_he: true,
+                ds_email_cv: true,
+                an_danh: true,
+                han_nhan_ho_so: true,
+                luot_xem: true,
+                tu_tuoi: true,
+                den_tuoi: true,
+                trang_thai: true,
+                ngon_ngu_ho_so: true,
+                created_at: true,
+                ds_tu_khoa: {
+                    select: {
+                        tu_khoa: {
+                            select: { id: true, ten_tu_khoa: true }
+                        }
+                    }
+                },
+                _count: {
+                    select: {
+                        ds_dia_diem: true,
+                        ds_thich: true,
+                        ds_tu_khoa: true
+                    }
+                }
+            },
+            where: { id: parseInt(id) }
+        })
+
+        const data = {
+            id: job.id,
+            major: viewFor === "client" ? job.nganh_nghe.ten_nganh : {
+                id: job.nganh_nghe.id,
+                name: job.nganh_nghe.ten_nganh
+            },
+            level: viewFor === "client" ? job.cap_bac.ten_cap_bac : {
+                id: job.cap_bac.id,
+                name: job.cap_bac.ten_cap_bac
+            },
+            ...((job.an_danh && viewFor === "client") ? { company: false } : {
+                company: {
+                    hide: job.an_danh,
+                    id: job.nha_tuyen_dung.nha_tuyen_dung_id,
+                    name: job.nha_tuyen_dung.ten_cong_ty,
+                    logo: job.nha_tuyen_dung.logo
+                },
+            }),
+            location: viewFor === "client" ? job.dia_diem.ten_tinh_thanh : {
+                id: job.dia_diem.id,
+                name: job.dia_diem.ten_tinh_thanh
+            },
+            title: job.chuc_danh,
+            industry: viewFor === "client" ? job.linh_vuc.ten_linh_vuc : {
+                id: job.linh_vuc.id,
+                name: job.linh_vuc.ten_linh_vuc,
+            },
+            type: job.loai_viec_lam,
+            descriptions: job.mo_ta,
+            requirements: job.yeu_cau,
+            ...(job.luong_thuong_luong && viewFor === "client" ? { salary: false } : {
+                salary: {
+                    hide: job.luong_thuong_luong,
+                    min: job.luong_toi_thieu.toFixed(0).toString(),
+                    max: job.luong_toi_da.toFixed(0).toString(),
+                    currency: job.luong_loai_tien,
+                }
+            }),
+            workingTime: job.thoi_gian_lam_viec,
+            ...(job.an_lien_he && viewFor === "client" ? { contact: false } : {
+                contact: {
+                    hide: job.an_lien_he,
+                    person: job.nguoi_lien_he,
+                    email: job.ds_email_cv,
+                }
+            }),
+            closeDate: job.han_nhan_ho_so,
+            views: job.luot_xem,
+            fromAge: job.tu_tuoi,
+            toAge: job.den_tuoi,
+            state: job.trang_thai,
+            cvLangs: viewFor === "client" ? job.ngon_ngu_ho_so.map(lang => {
+                return lang["label"]
+            }) : job.ngon_ngu_ho_so,
+            postDate: job.created_at,
+            tags: job.ds_tu_khoa.map(tag => {
+                return {
+                    id: tag.tu_khoa.id,
+                    name: tag.tu_khoa.ten_tu_khoa
+                }
+            })
+
+        }
+
+        return data;
+    } catch (err) {
+        return ({ message: err.message, status: 500 });
+    }
+})
+
+export const updateJob = cache(async (req) => {
+    try {
+        const {
+            frmJob: {
+                frmJobTitle,
+                frmJobLevel,
+                frmJobType,
+                frmJobMajor,
+                frmJobCompField,
+                frmJobLocation,
+                frmJobSalaryHide,
+                frmJobSalaryMax,
+                frmJobSalaryMin,
+                frmJobSalaryCurrency,
+                frmJobTags,
+                frmJobCVLanguage,
+                frmJobContact,
+                frmJobContactHide,
+                frmJobDes,
+                frmJobEmailCV,
+                frmJobHideCompany,
+                frmJobReq,
+                frmJobCompany,
+            },
+            // frmCompany: {
+
+            // },
+            frmInfo: {
+                email, jobId
+            }
+        } = await req
+
+        const delete_oldTags = await db.tuKhoaViecLam.deleteMany({
+            where: {
+                viec_lam_id: jobId,
+            }
+        })
+        const newTags = frmJobTags.filter(item => item.__isNew__ === true).map(tag => {
+            return {
+                ten_tu_khoa: tag.label
+            }
+        })
+        if (newTags.length > 0) {
+            const _newTags = await db.tuKhoa.createMany({
+                data: newTags,
+                skipDuplicates: true
+            })
+        }
+        const tags = frmJobTags.map(tag => {
+            return tag['label']
+        })
+        const findTags = await db.tuKhoa.findMany({
+            select: { id: true },
+            where: {
+                ten_tu_khoa: { in: tags }
+            }
+        })
+        const dataTags = findTags.map(tag => {
+            return { tu_khoa_id: tag.id }
+        })
+
+        const dataUser = await db.taiKhoan.findUnique({
+            select: { id: true },
+            where: { email: email }
+        })
+
+        const editJob = await db.viecLam.update({
+            where: { id: jobId },
+            data: {
+                chuc_danh: frmJobTitle, //done
+                cap_bac_id: frmJobLevel.value, //done
+                loai_viec_lam: frmJobType, //done
+                nganh_nghe_id: frmJobMajor.value, //done
+                linh_vuc_id: frmJobCompField.value, //đone
+                dia_diem_id: frmJobLocation.value,
+                mo_ta: frmJobDes, //done
+                yeu_cau: frmJobReq, //done
+                luong_toi_thieu: parseFloat(frmJobSalaryMin.replace(/\s/g, "").replace(".", "")),
+                luong_toi_da: parseFloat(frmJobSalaryMax.replace(/\s/g, "").replace(".", "")),
+                luong_loai_tien: parseInt(frmJobSalaryCurrency.value),
+                luong_thuong_luong: frmJobSalaryHide, //done
+                ds_tu_khoa: {
+                    create: dataTags    //done
+                },
+                ngon_ngu_ho_so: frmJobCVLanguage, //done
+                nguoi_lien_he: frmJobContact, //done
+                an_lien_he: frmJobContactHide, //done
+                ds_email_cv: frmJobEmailCV, //done
+                an_danh: frmJobHideCompany, //done
+                // thoi_gian_lam_viec,
+                // han_nhan_ho_so,
+                // thoi_gian_dang,
+                // so_luong,
+                // tu_tuoi,
+                // den_tuoi,
+                // trang_thai,
+                // thao_tac,
+                // ngon_ngu_id,
+                nha_tuyen_dung_id: frmJobCompany.value,
+            }
+        })
+        
+        return {
+            data: editJob,
+            message: "Việc làm đã cập nhật thành công.",
+            status: 200
+        }
+
+    } catch (err) {
+        return ({ message: err, status: 500 });
+    }
 })

@@ -165,7 +165,7 @@ const JobDetail = ({ data }) => {
                   <div>
                     <p>Địa điểm</p>
                     <p>
-                      {data.locations.join(`, `)}
+                      {data.location}
                     </p>
                   </div>
                 </li>

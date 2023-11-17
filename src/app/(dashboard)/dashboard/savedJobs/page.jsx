@@ -1,4 +1,4 @@
-// import { getSavedJobsById } from '@/app/api/job/job'
+import { getSavedJobsById } from '@/app/api/job/job'
 import JobList from '@/components/client/jobs'
 import Dcard from '@/components/client/ui/card'
 // import { getServerSession } from 'next-auth'
@@ -6,17 +6,17 @@ import Dcard from '@/components/client/ui/card'
 
 const page = async () => {
 
-    // const jobs = await getSavedJobsById()
+    const jobs = await getSavedJobsById()
 
   return (
-    <></>
-    // <Dcard title="Việc làm yêu thích" des={`${jobs.data.length} việc làm`}>
-    //     <div className="grid grid-cols-1 gap-4 pb-5">
-    //         <JobList data={jobs} />
-    //     </div>
-    //     {/* <Pagination pages={pages} parents={parents} className={`${data.pagination.total == 0 ? 'hidden' : ''}`} /> */}
+    // <></>
+    <Dcard title="Việc làm yêu thích" des={`${jobs.data.length} việc làm`}>
+        <div className="grid grid-cols-1 gap-4 pb-5">
+            <JobList data={jobs} />
+        </div>
+        {/* <Pagination pages={pages} parents={parents} className={`${data.pagination.total == 0 ? 'hidden' : ''}`} /> */}
 
-    // </Dcard>
+    </Dcard>
   )
 }
 

@@ -1,4 +1,4 @@
-import { getSavedJobsById } from '@/app/api/job/job'
+import { getJobs} from '@/app/api/job/job'
 import JobList from '@/components/client/jobs'
 import Dcard from '@/components/client/ui/card'
 // import { getServerSession } from 'next-auth'
@@ -6,7 +6,7 @@ import Dcard from '@/components/client/ui/card'
 
 const page = async () => {
 
-    const jobs = await getSavedJobsById()
+    const jobs = await getJobs(10)
 
   return (
     // <></>

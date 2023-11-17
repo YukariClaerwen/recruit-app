@@ -24,7 +24,7 @@ export default function Dialog({ title, onClose, onOk, children, onShow, onSave,
         } else {
             setbtnValue("Lưu")
         }
-    }, [showDialog, action])
+    }, [showDialog, action, onShow])
 
     const closeDialog = () => {
         dialogRef.current?.close();

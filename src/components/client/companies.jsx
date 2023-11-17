@@ -17,9 +17,9 @@ const Companies = (props) => {
                         href={`/companies/${c.id}?title=${c.company_name}`}>
                         <CardGroup className="w-full h-40 flex flex-col justify-center items-center border-b border-slate-200">
                             {c.images ? (
-                                <Image className="grayscale hover:grayscale-0 " width={500} height={500}  src={c.images[0]} />
+                                <Image className="grayscale hover:grayscale-0 " width={500} height={500}  src={c.images[0]} alt={c.company_name} />
                             ) : (
-                                <Image className="grayscale hover:grayscale-0 opacity-50 w-5/12" width={500} height={500} src="/logo.png" />
+                                <Image className="grayscale hover:grayscale-0 opacity-50 w-5/12" width={500} height={500} src="/logo.png" alt="default_image" />
                             )}
                         </CardGroup>
                         <CardBody className=" px-6 py-8 sm:px-10">

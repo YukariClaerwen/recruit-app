@@ -69,7 +69,7 @@ const PostJobForm = (props) => {
   useEffect(() => {
     form.reset({ ...values });
     fetchData();
-  }, [form])
+  }, [form, fetchData, values])
 
   // console.log(form.getValues())
   const onSubmit = async (value) => {

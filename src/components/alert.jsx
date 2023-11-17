@@ -18,7 +18,7 @@ const Alert = () => {
             })
         }
         router.replace("/")
-    }, [loginState])
+    }, [loginState, router])
 
     return (
         <></>

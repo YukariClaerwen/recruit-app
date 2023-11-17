@@ -41,7 +41,7 @@ const SignInForm = () => {
                 router.push('/')
             }
         }
-    }, [session])
+    }, [session, router])
 
     const onSubmit = async (values) => {
         // console.log(values);
@@ -51,7 +51,7 @@ const SignInForm = () => {
             password: values.password,
             redirect: false,
         })
-        console.log(signInData)
+        // console.log(signInData)
         if (signInData?.error) {
             setLoading(false)
             toast({

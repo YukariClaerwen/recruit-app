@@ -239,6 +239,41 @@ export const searchJobs = cache(async (key, location, page, sort) => {
     }
 })
 
+export const getJobsByCompany = cache(async (id) => {
+    const where = {
+        nha_tuyen_dung_id: parseInt(id),
+        is_deleted: false,
+    }
+
+    try {
+
+        const [jobs, count] = await db.$transaction([
+            db.viecLam.findMany({
+                where: where,
+                select: selectJobList,
+            }),
+            db.viecLam.count({
+                where: where
+            })
+        ])
+
+        // sortSalary(await jobs, "desc")
+
+        // console.log(await sortBySalary)
+        // console.log(jobs)
+        const data = returnJobsItem(await jobs)
+        return {
+            data: data,
+            pagination: {
+                total: count
+            }
+        }
+
+    } catch (err) {
+        console.log(err.message)
+        return ({ message: err, status: 500 });
+    }
+})
 
 export const getJobById = cache(async (id, viewFor) => {
     try {

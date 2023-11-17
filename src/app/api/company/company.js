@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { hash } from "bcrypt";
 import { cache } from "react";
-import { getJobs } from "../job/job";
+import { getJobsByCompany  } from "../job/job";
 
 export const revalidate = 3600 // revalidate the data at most every hour
 
@@ -140,7 +140,9 @@ export const getCompany = cache(async (id) => {
             }
         });
 
-        const jobs = await getJobs(undefined, undefined, undefined ,undefined , undefined, parseInt(id))
+        const jobs = await getJobsByCompany(parseInt(id))
+
+        console.log(jobs)
 
         const result = {
             id: company.nha_tuyen_dung_id,

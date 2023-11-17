@@ -57,6 +57,9 @@ const Sidebar = ({ show, setShow, activeKey, onShow }) => {
                 <SideNav path="/dashboard/applied" child={false} name="Việc làm đã ứng tuyển" />
               </AccordionItem>
               <AccordionItem as={Nav} className="block mb-1">
+                <SideNav path="/dashboard/savedJobs" child={false} name="Việc làm yêu thích" />
+              </AccordionItem>
+              <AccordionItem as={Nav} className="block mb-1">
                 <SideNav path="/dashboard/account" child={false} name="Tài khoản" />
               </AccordionItem>
             </Accordion>

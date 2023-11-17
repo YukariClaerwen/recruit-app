@@ -31,7 +31,7 @@ const JobList = ({ data }) => {
                   <span className="btn btn-sm rounded-pill tag tag-hot mr-2">Hot</span>
                   <span className="btn btn-sm rounded-pill tag tag-new mr-2">New</span>
                 </div>
-                <JobFav />
+                <JobFav job={job} />
               </div>
               <div className="flex justify-between">
                 <div className="flex justify-start">

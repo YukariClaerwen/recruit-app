@@ -47,8 +47,6 @@ export const getUser = cache(async () => {
             }
         });
 
-        console.log(users)
-
         const candidates = await users.filter(user => {
             if (user.ung_vien !== null) return user
         })

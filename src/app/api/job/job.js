@@ -1,5 +1,6 @@
 
 import { db } from "@/lib/db";
+import { getServerSession } from "next-auth";
 import { cache } from "react";
 
 export const revalidate = 3600 // revalidate the data at most every hour
@@ -35,31 +36,38 @@ const selectJobList = {
         }
     }
 }
-const returnJobsItem = (jobs) => {
-    const defaultValues = (item) => {
-        return {
-            id: item.id,
-            title: item.chuc_danh,
-            views: item.luot_xem,
-            posted_at: item.created_at,
-            company: {
-                name: item.nha_tuyen_dung.ten_cong_ty,
-                logo: item.nha_tuyen_dung.logo,
-            },
-            location: {
-                id: item.dia_diem.id,
-                name: item.dia_diem.ten_tinh_thanh,
-            },
-            tags: item.ds_tu_khoa.map(tag => {
-                return tag['tu_khoa']['ten_tu_khoa']
-            })
-        }
+
+const defaultValues = (item) => {
+
+    return {
+        id: item.id,
+        title: item.chuc_danh,
+        views: item.luot_xem,
+        posted_at: item.created_at,
+        company: {
+            name: item.nha_tuyen_dung.ten_cong_ty,
+            logo: item.nha_tuyen_dung.logo,
+        },
+        location: {
+            id: item.dia_diem.id,
+            name: item.dia_diem.ten_tinh_thanh,
+        },
+        tags: item.ds_tu_khoa.map(tag => {
+            return tag['tu_khoa']['ten_tu_khoa']
+        }),
+        // isFavorite: checkFav(email, item.id) ? true : false
     }
-    const data = jobs.map(item => {
+}
+
+const returnJobsItem = async (jobs) => {
+    const session = await getServerSession()
+
+    const data = await Promise.all(jobs.map(async item => {
         if (item.luong_thuong_luong) {
             return {
                 ...defaultValues(item),
-                salary: false
+                salary: false,
+                isSaved: session?.user ? await checkFav(session?.user.email, item.id) : false
             }
         }
         return {
@@ -69,8 +77,9 @@ const returnJobsItem = (jobs) => {
                 max: item.luong_toi_da.toFixed(0).toString(),
                 currency: item.luong_loai_tien,
             },
+            isSaved: session?.user ? await checkFav(session?.user.email, item.id) : false
         }
-    })
+    }))
 
     return data
 }
@@ -101,7 +110,7 @@ const sortSalary = async (jobs, key) => {
 }
 
 
-export const getJobs = cache(async (take, page = 1, sort, tag, major, company) => {
+export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
     const sortBy = sort == "asc" ? sortAsc
         : sort == "desc" ? sortByDefault
             : sort == "salary" ? sortSal
@@ -116,7 +125,6 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major, company) =
                     }
                 }
             },
-            { nha_tuyen_dung_id: parseInt(company), }
         ],
         is_deleted: false,
     }
@@ -142,9 +150,17 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major, company) =
 
         // console.log(await sortBySalary)
         // console.log(jobs)
-        const data = returnJobsItem(await jobs)
+        // console.log(session)
+        const data = await returnJobsItem(jobs)
+
+        // const js = await Promise.all(data.map(async job => {
+        //     return {
+        //         job,
+        //         isSaved: await checkFav(session?.user.email, job.id)
+        //     }
+        // }))
         return {
-            data: data,
+            data: await data,
             pagination: {
                 total: count
             }
@@ -228,7 +244,7 @@ export const searchJobs = cache(async (key, location, page, sort) => {
         const data = returnJobsItem(await jobs)
         // return jobs
         return {
-            data: data,
+            data: await data,
             pagination: {
                 total: count
             }
@@ -258,12 +274,9 @@ export const getJobsByCompany = cache(async (id) => {
         ])
 
         // sortSalary(await jobs, "desc")
-
-        // console.log(await sortBySalary)
-        // console.log(jobs)
         const data = returnJobsItem(await jobs)
         return {
-            data: data,
+            data: await data,
             pagination: {
                 total: count
             }
@@ -509,5 +522,73 @@ export const updateJob = cache(async (req) => {
 
     } catch (err) {
         return ({ message: err, status: 500 });
+    }
+})
+
+export const checkFav = async (email, jobId) => {
+    const user = await db.taiKhoan.findUnique({
+        where: { email: email },
+        select: {
+            ung_vien: {
+                select: {
+                    ung_vien_id: true
+                }
+            }
+        }
+    })
+
+    const jobs = await db.viecLamYeuThich.findFirst({
+        where: {
+            ung_vien_id: user.ung_vien.ung_vien_id,
+            viec_lam_id: jobId,
+            is_deleted: false
+        },
+    })
+    if (!jobs) {
+        return false
+    } else {
+        return true
+    }
+}
+
+export const getSavedJobsById = cache(async () => {
+    try {
+        // let take = 10;
+
+        const session = await getServerSession()
+        const user = await db.taiKhoan.findUnique({
+            where: { email: session?.user.email },
+            select: {
+                ung_vien: {
+                    select: {
+                        ung_vien_id: true
+                    }
+                }
+            }
+        })
+
+        const jobs = await db.viecLamYeuThich.findMany({
+            where: { ung_vien_id: user.ung_vien.ung_vien_id, is_deleted: false },
+            select: {
+                viec_lam: {
+                    select: selectJobList,
+                }
+            }
+        })
+        const arr = await jobs.map(j => {
+            return j['viec_lam']
+        })
+
+        const data = returnJobsItem(await arr)
+        return {
+            data: await data
+            // pagination: {
+            //     total: count
+            // }
+        }
+
+    } catch (err) {
+        console.log(err)
+        return ({ message: err.message, status: 500 });
     }
 })

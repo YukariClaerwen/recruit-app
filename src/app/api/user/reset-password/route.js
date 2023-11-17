@@ -61,7 +61,7 @@ function generateResetToken() {
 
 // Function to generate the reset link based on the environment
 function generateResetLink(resetToken) {
-    const baseURL = process.env.NODE_ENV === 'production' ? 'https://your-production-domain.com' : 'http://localhost:3000';
+    const baseURL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000';
     return `${baseURL}/password/verified/${resetToken}`;
 }
 

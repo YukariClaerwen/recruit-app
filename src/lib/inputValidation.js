@@ -36,10 +36,10 @@ export const resetPassYup = {
 }
 export const verifyPassYup = {
     schema: yup.object().shape({
-        email: yup
-            .string()
-            .required('Vui lòng nhập email.')
-            .email('Email sai cú pháp.'),
+        // email: yup
+        //     .string()
+        //     .required('Vui lòng nhập email.')
+        //     .email('Email sai cú pháp.'),
         password: yup
             .string()
             .required('Vui lòng nhập mật khẩu.')

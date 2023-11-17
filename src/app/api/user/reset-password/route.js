@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-import { hash, genSalt } from 'bcrypt';
+import Sqids from 'sqids'
 import { Prisma } from "@prisma/client";
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
@@ -28,7 +28,7 @@ export async function POST(req) {
 
         if (user) {
             // Generate a reset token (you can use a library like uuid or crypto)
-            const resetToken = await generateResetToken();
+            const resetToken = generateResetToken();
 
             // Update the user record in the database with the reset token
             await db.taiKhoan.update({
@@ -38,7 +38,7 @@ export async function POST(req) {
 
             // Send email with reset link
             const resetLink = generateResetLink(resetToken);
-            // await sendResetEmail(email, resetLink);
+            await sendResetEmail(email, resetLink);
 
             return NextResponse.json({ message: "Password reset email sent successfully.", user }, { status: 200 });
         } else {
@@ -51,21 +51,18 @@ export async function POST(req) {
 }
 
 // Function to generate a reset token
-async function generateResetToken() {
-    // Implement your logic to generate a unique reset token, you can use a library like uuid or crypto
-    const rawToken = 'your_generated_token';
-
-    // Hash the token using bcrypt
-    const salt = await genSalt(10);
-    const hashedToken = await hash(rawToken, salt);
-
-    return hashedToken;
+function generateResetToken() {
+    const sqids = new Sqids({
+        minLength: 10,
+    })
+    const token = sqids.encode([1, 2, 3]) // "86Rf07xd4z"
+    return token;
 }
 
 // Function to generate the reset link based on the environment
 function generateResetLink(resetToken) {
-    const baseURL = process.env.NODE_ENV === 'production' ? 'https://your-production-domain.com' : 'http://localhost:3000';
-    return `${baseURL}/password/reset/${resetToken}`;
+    const baseURL = process.env.NODE_ENV === 'production' ? process.env.BASE_URL : 'http://localhost:3000';
+    return `${baseURL}/password/verified/${resetToken}`;
 }
 
 // Function to send the reset email

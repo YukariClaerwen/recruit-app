@@ -1,4 +1,6 @@
-import { getJobs} from '@/app/api/job/job'
+export const dynamic = 'force-dynamic'
+
+import { getJobs, getSavedJobsById} from '@/app/api/job/job'
 import JobList from '@/components/client/jobs'
 import Dcard from '@/components/client/ui/card'
 // import { getServerSession } from 'next-auth'
@@ -6,7 +8,7 @@ import Dcard from '@/components/client/ui/card'
 
 const page = async () => {
 
-    const jobs = await getJobs(10)
+    const jobs = await getSavedJobsById()
 
   return (
     // <></>

@@ -25,7 +25,7 @@ export async function PUT(req){
             where: { id: findUser.id },
             data: { mat_khau: hashedPassword },
         });
-        return NextResponse.json({ message: "Password reset successfully" }, { status: 200 });
+        return NextResponse.json({ message: "Cập nhật mật khẩu thành công" }, { status: 200 });
 
     } catch (err) {
         throw new Error(err);

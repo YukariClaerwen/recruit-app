@@ -8,9 +8,11 @@ import { useState } from "react";
 import Button from "../ui/button";
 import { Spinner } from "react-bootstrap";
 import { useToast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const VerifyPass = () => {
     const schema = verifyPassYup.schema
+    const router = useRouter();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
     const [hide, setHide] = useState(false);
@@ -44,6 +46,9 @@ const VerifyPass = () => {
                     description: <p dangerouslySetInnerHTML={{ __html: resData.message }} />,
                     variant: 'success',
                 });
+                setLoading(true);
+                
+            router.push('/sign-in');
             } else {
                 setLoading(false);
                 const errorData = await response.json();

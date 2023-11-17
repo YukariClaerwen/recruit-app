@@ -91,7 +91,7 @@ export const Navbar2 = () => {
                 Ketnoi
                 <span>Vieclam</span>
               </Link>
-              <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+              {/* <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button> */}
             </div>
             <div className="offcanvas-body flex-grow-1 lg:justify-between lg:items-center">
 

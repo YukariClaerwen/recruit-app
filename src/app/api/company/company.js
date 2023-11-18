@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { hash } from "bcrypt";
 import { cache } from "react";
-import { getJobsByCompany  } from "../job/job";
+import { getJobsByCompany } from "../job/job";
 
 export const revalidate = 3600 // revalidate the data at most every hour
 
@@ -199,13 +199,19 @@ export const getCompany = cache(async (id) => {
 export const addCompany = cache(async (req) => {
     try {
 
-        const {
-            email, username, password,
-            company_name, address, size,
-            nation, contact_person, industry,
-            description, logo, location,
-            benefits, phone,
-        } = req
+        const
+            {
+                value:
+                {
+                    email, password, cPassword,
+                    company_name, company_size,
+                    industry, nation, contact_person,
+                    phone_number, description, locations, benefits,
+                    // logo, images
+                }
+            } = req
+
+            console.log(email)
 
         // check if email already exists
         const existingUserByEmail = await db.taiKhoan.findUnique({
@@ -215,35 +221,42 @@ export const addCompany = cache(async (req) => {
             return ({ user: null, message: `Email ${email} đã tồn tại, hãy đăng nhập hoặc tạo email khác`, status: 409 })
         }
 
-        // check if username already exists
-        const existingUserByUsername = await db.taiKhoan.findUnique({
-            where: { ten_tai_khoan: username }
-        });
-        if (existingUserByUsername) {
-            return ({ user: null, message: `Tên tài khoản ${username} đã tồn tại, hãy nhập một tên khác`, status: 409 })
-        }
 
         const hashedPassword = await hash(password, 10);
+
+        const _locations = locations.map(loc => {
+            return {
+                tinh_thanh_id: loc.province.value,
+                branch_name: loc.name,
+                dia_chi: loc.address,
+            }
+        })
+
+        const _benefits = benefits.map(b => {
+            return {
+                phuc_loi_id: b.benefit.value,
+                mo_ta: b.description
+            }
+        })
 
         const recruiter = await db.taiKhoan.create({
             data: {
                 email: email,
-                ten_tai_khoan: username,
                 mat_khau: hashedPassword,
                 nha_tuyen_dung: {
                     create: {
                         ten_cong_ty: company_name,
-                        dia_chi: address,
-                        quy_mo_id: size,
+                        quy_mo_id: company_size.value,
                         quoc_gia: nation,
                         nguoi_lien_he: contact_person,
-                        linh_vuc_id: industry,
+                        linh_vuc_id: industry.value,
                         mo_ta: description,
-                        logo: logo,
-                        tinh_thanh_id: location,
-                        so_dien_thoai: phone,
+                        so_dien_thoai: phone_number,
+                        ds_dia_diem: {
+                            createMany: { data: _locations }
+                        },
                         ds_phuc_loi: {
-                            createMany: { data: benefits },
+                            createMany: { data: _benefits },
                         }
                     }
                 }
@@ -252,7 +265,7 @@ export const addCompany = cache(async (req) => {
 
         const { mat_khau, ...rest } = recruiter
 
-        return ({ data: rest, status: 201 });
+        return ({ data: rest, message: "Tạo thêm nhà tuyển dụng thành công.", status: 201 });
 
     } catch (err) {
         console.log(err)

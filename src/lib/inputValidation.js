@@ -72,6 +72,8 @@ export const loginYup = {
         password: ''
     }
 }
+
+
 export const registerYup = {
     schema: yup.object().shape({
         username: yup
@@ -82,6 +84,7 @@ export const registerYup = {
         email: yup
             .string()
             .required('Vui lòng nhập email.')
+            .min(1, "Email sai cú pháp.")
             .email('Email sai cú pháp.'),
         password: yup
             .string()
@@ -100,6 +103,70 @@ export const registerYup = {
         cPassword: ''
     }
 }
+
+export function postCompanyYup() {
+    const locationSchema = {
+        province: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
+        name: yup.string().required('Vui lòng nhập thông tin.'), 
+        adress: yup.string().required('Vui lòng nhập thông tin.'),
+    }
+    const benefitSchema = {
+        benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
+        description: yup.string().required('Vui lòng nhập thông tin.'), 
+    }
+    const res = {
+        schema: yup.object().shape({
+            email: yup
+                .string()
+                .required('Vui lòng nhập email.')
+                .min(1, "Email sai cú pháp.")
+                .email('Email sai cú pháp.'),
+            password: yup
+                .string()
+                .required('Vui lòng nhập mật khẩu.')
+                .password('Mật khẩu phải có tối thiểu 8 ký tự, gồm viết hoa, viết thường, chữ số, và 1 ký tự đặc biệt.'),
+            cPassword: yup
+                .string()
+                .required("Vui lòng nhập lại mật khẩu.")
+                .password('Mật khẩu phải có tối thiểu 8 ký tự, gồm viết hoa, viết thường, chữ số, và 1 ký tự đặc biệt.')
+                .oneOf([yup.ref("password")], "Mật khẩu không khớp."),
+            company_name: yup.string().required('Vui lòng nhập thông tin.'),
+            nation: yup.string().required('Vui lòng nhập thông tin.'),
+            contact_person: yup.string().required('Vui lòng nhập thông tin.'),
+            industry: yup.mixed().required('Vui lòng chọn lĩnh vực.'),
+            company_size: yup.mixed().required('Vui lòng chọn quy mô công ty.'),
+            phone_number: yup.string().required('Vui lòng nhập số điện thoại.').phone("Số điện thoại sai cú pháp"),
+            description: yup.string().required('Vui lòng nhập thông tin.'),
+            locations: yup.array().of(yup.object().shape(
+                {
+                    province: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
+                    name: yup.string().required('Vui lòng nhập thông tin.'), 
+                    adress: yup.string().required('Vui lòng nhập thông tin.'),
+                }
+            )).min(1,'Vui lòng nhập thông tin.'),
+            benefits: yup.array().of(yup.object().shape({
+                benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
+                description: yup.string().required('Vui lòng nhập thông tin.'), 
+            })).required('Vui lòng nhập thông tin.'),
+        }).required("Vui lòng nhập thông tin."),
+        default: {
+            email: "",
+            password: "",
+            cPassword: "",
+            company_name: "",
+            company_size: undefined,
+            industry: undefined,
+            nation: "",
+            contact_person: "",
+            phone_number: "",
+            description: "",
+            locations: [{ province: undefined, name: "", adress: "", is_branch: false }],
+            benefits: [{ benefit: undefined, description: "" }],
+        }
+    }
+    return res;
+}
+
 export function postJobYup(job) {
     const tags = job ? job.tags.map(t => {
         return {
@@ -151,9 +218,9 @@ export function postJobYup(job) {
             } : undefined) : undefined,
             frmJobDes: job ? job.descriptions : "",
             frmJobReq: job ? job.requirements : "",
-            frmJobSalaryMin:  job ? job.salary.min : 100,
-            frmJobSalaryMax:  job ? job.salary.max : 200,
-            frmJobSalaryCurrency: job ? {value: job.salary.currency, label: job.salary.currency == "1" ? "VND" : "USD"} : { value: "2", label: "USD" },
+            frmJobSalaryMin: job ? job.salary.min : 100,
+            frmJobSalaryMax: job ? job.salary.max : 200,
+            frmJobSalaryCurrency: job ? { value: job.salary.currency, label: job.salary.currency == "1" ? "VND" : "USD" } : { value: "2", label: "USD" },
             frmJobSalaryHide: job ? job.salary.hide : false,
             frmJobTags: job ? tags : [],
             frmJobCVLanguage: job ? job.cvLangs : [],

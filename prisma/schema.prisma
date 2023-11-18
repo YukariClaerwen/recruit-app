@@ -49,7 +49,7 @@ model TaiKhoan {
   emailVerified     DateTime?
   name              String?
   ten_tai_khoan     String?       @unique @db.Citext
-  mat_khau          String?       @db.VarChar(256)
+  mat_khau          String?       @db.Text
   is_deleted        Boolean       @default(false)
   created_at        DateTime      @default(now())
   updated_at        DateTime      @updatedAt
@@ -154,12 +154,11 @@ model NhaTuyenDung {
   tai_khoan_id      Int                     @id
   nha_tuyen_dung_id Int                     @unique @default(autoincrement())
   ten_cong_ty       String?                 @db.VarChar(256)
-  dia_chi           String?                 @db.VarChar(256)
   quy_mo_id         Int?
   quoc_gia          String?                 @db.VarChar(256)
   nguoi_lien_he     String?                 @db.VarChar(256)
   linh_vuc_id       Int?
-  mo_ta             String?
+  mo_ta             String?                 @db.Text
   so_dien_thoai     String?
   logo              String?                 @db.VarChar(256)
   is_deleted        Boolean                 @default(false)
@@ -497,7 +496,7 @@ model PhucLoiNhaTuyenDung {
   id                Int          @id @default(autoincrement())
   nha_tuyen_dung_id Int
   phuc_loi_id       Int
-  mo_ta             String?      @db.VarChar(256)
+  mo_ta             String?      @db.Text
   created_at        DateTime     @default(now())
   is_deleted        Boolean      @default(false)
   nha_tuyen_dung    NhaTuyenDung @relation(fields: [nha_tuyen_dung_id], references: [nha_tuyen_dung_id], onDelete: NoAction, onUpdate: NoAction, map: "PhucLoiNTD_NTD_id")
@@ -533,7 +532,8 @@ model DiaDiemNhaTuyenDung {
   tinh_thanh_id     Int
   nha_tuyen_dung_id Int
   is_branch         Boolean      @default(false)
-  branch_name       String?
+  branch_name       String?      @db.Text
+  dia_chi           String?      @db.Text
   created_at        DateTime     @default(now())
   is_deleted        Boolean      @default(false)
   updated_at        DateTime     @default(now()) @updatedAt

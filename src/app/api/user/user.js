@@ -6,6 +6,7 @@ export const revalidate = 3600 // revalidate the data at most every hour
 export const getUser = cache(async () => {
     try {
         const users = await db.taiKhoan.findMany({
+            where: { is_deleted: false},
             select: {
                 id: true,
                 email: true,

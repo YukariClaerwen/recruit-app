@@ -1,12 +1,11 @@
 'use client';
-import { getUser, getCandidates, countUsers } from "@/app/api/user/user"
-import { PencilSimple, UserCircle, UserSwitch } from "@phosphor-icons/react/dist/ssr";
+import { PencilSimple, UserCircle, UserCircleGear, UserSwitch } from "@phosphor-icons/react/dist/ssr";
 
 import Image from "next/image";
 import Link from "next/link";
 import Table from 'react-bootstrap/Table';
 import Dcard from "../client/ui/card";
-import { Badge, Button, FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import { Badge, Button, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,15 +22,16 @@ const schema = selectOneFieldYup.schema;
 
 const UserList = (props) => {
     const users = props.data
+    // console.log(users)
     const pathname = usePathname();
     const router = useRouter();
     const searchParams = useSearchParams();
     const [title, setTitle] = useState("");
     const [selectedRole, setSelectedRole] = useState(undefined)
-    const {data: session} = useSession();
+    const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const dialogRef = useRef(null, searchParams);
-    
+
     const { toast } = useToast();
     // console.log(props)
     // const data = await getUser();
@@ -57,13 +57,27 @@ const UserList = (props) => {
 
     const links = (
         <>
-            <Link href="/admin/users/post" className="rounded-full round-btn round-btn-border ml-5 btn btn-primary">Thêm người dùng</Link>
+            <div>
+                <Dropdown className=" px-3 flex justify-center items-stretch self-stretch px-3 py-2 border bgcolor-LightGray">
+                    <DropdownToggle as="a" id="dropdown-profile" href="#" className="nav-link flex flex-row items-center gap-2">
+                        <span className="nav-profile-name">Thêm người dùng</span>
+                    </DropdownToggle>
+
+                    <DropdownMenu className="dropdown-menu-right navbar-dropdown" align="end">
+                        <DropdownItem href="/admin/users/recruiter/post" className="flex items-center flex-row gap-2 justify-start">
+                            <UserCircleGear size={20} weight="thin" />
+                            Thêm nhà tuyển dụng
+                        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+            {/* <Link href="/admin/users/post" className="rounded-full round-btn round-btn-border ml-5 btn btn-primary">Thêm người dùng</Link> */}
         </>
     )
 
     const onShow = () => {
         setTitle("Cập nhật vai trò người dùng")
-        
+
         form.setValue("selectField", {
             value: searchParams.get('value'),
             label: searchParams.get('value'),
@@ -71,7 +85,7 @@ const UserList = (props) => {
     }
     const onOk = () => { }
 
-    const onSubmit = async (value) => { 
+    const onSubmit = async (value) => {
         setLoading(true)
         const res = await fetch('/api/dashboard/user/', {
             method: 'PUT',
@@ -84,7 +98,7 @@ const UserList = (props) => {
                 _email: session?.user.email
             })
         })
-        
+
         if (res.ok) {
             const resData = await res.json()
             toast({

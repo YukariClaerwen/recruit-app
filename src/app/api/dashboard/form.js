@@ -44,6 +44,48 @@ export const getIndustry = async() => {
     }
 }
 
+export const getCompanySize = async () => {
+    try {
+        const size = await db.quyMo.findMany({
+            select: {
+                id: true,
+                quy_mo: true
+            }
+        })
+        const data = await size.map(item => {
+            return {
+                value: item.id,
+                label: item.quy_mo
+            }
+        })
+        return data
+    } catch(err) {
+        return ({ message: err.message, status: 500 });
+    }
+}
+
+export const getBenefit = async () => {
+    try {
+        const benefits = await db.phucLoi.findMany({
+            select: {
+                id: true,
+                ten_phuc_loi: true,
+                icon: true
+            }
+        })
+        const data = await benefits.map(item => {
+            return {
+                value: item.id,
+                label: item.ten_phuc_loi,
+                icon: item.icon
+            }
+        })
+        return data
+    } catch(err) {
+        return ({ message: err.message, status: 500 });
+    }
+}
+
 export const getLocation = async () => {
     try {
         const locations = await db.tinhThanh.findMany({

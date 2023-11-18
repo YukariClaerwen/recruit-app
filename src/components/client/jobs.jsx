@@ -8,11 +8,14 @@ import Image from "next/image";
 import JobFav from "./jobfavorite";
 import NumberFormat from "../format/number";
 import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const JobList = ({ data }) => {
   let jobs = data.data
 
   const pathname = usePathname();
+
+  const {data: session} = useSession();
 
   return (
     <>
@@ -31,7 +34,7 @@ const JobList = ({ data }) => {
                   <span className="btn btn-sm rounded-pill tag tag-hot mr-2">Hot</span>
                   <span className="btn btn-sm rounded-pill tag tag-new mr-2">New</span>
                 </div>
-                <JobFav job={job} />
+                {session?.user.role == 'user' || !session ? <JobFav job={job} /> : <></>}
               </div>
               <div className="flex justify-between">
                 <div className="flex justify-start">

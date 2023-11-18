@@ -31,10 +31,10 @@ export async function POST(req) {
         if (result.status === 409) {
             return NextResponse.json({ message: result.message}, { status: 409 })
         }
-        return NextResponse.json({ companies: result.data }, { status: 201 })
+        return NextResponse.json({ companies: result.data, message: result.message }, { status: 201 })
 
     } catch (err) {
-        console.log(err)
+        // console.log(err)
         return NextResponse.json({ message: "Something is wrong!"}, { status: 500 })
     }
 }

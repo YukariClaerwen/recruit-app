@@ -9,3 +9,13 @@ export function ButtonMain({ children, ...props }) {
         </>
     );
 }
+
+export function ButtonSub({ children, ...props }) {
+    return (
+        <>
+            <Button variant="subCl" {...props}>
+                {children}
+            </Button>
+        </>
+    );
+}

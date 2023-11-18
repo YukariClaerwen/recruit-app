@@ -277,12 +277,13 @@ const UserDrop = ({ session }) => {
                     </a> */}
 
         </>
-      ) : (
+      ) :
+
         <>
-          <Link href="/sign-in" className="rounded-full round-btn round-btn-border ml-5">Đăng nhập</Link>
-          <Link href="/sign-up" className="rounded-full round-btn ml-3">Đăng ký</Link>
+          <Link href="/sign-in" className={`rounded-full round-btn round-btn-border ml-5 ${pathname === '/' ? '' : 'small px-3 py-1'}`}>Đăng nhập</Link>
+          <Link href="/sign-up" className={`rounded-full round-btn ml-3 ${pathname === '/' ? '' : 'hidden'}`}>Đăng ký</Link>
         </>
-      )}
+      }
 
     </>
   )

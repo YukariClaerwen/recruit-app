@@ -162,12 +162,9 @@ export const getCompany = cache(async (id) => {
             images: company.images,
             location: company.ds_dia_diem.map(l => {
                 return {
-                    ...(!l.is_branch ? {
-                        head: l.tinh_thanh.ten_tinh_thanh
-                    } : {
-                        branch: l.branch_name,
-                        province: l.tinh_thanh.ten_tinh_thanh
-                    })
+                    name: l.branch_name,
+                    province: l.tinh_thanh.ten_tinh_thanh,
+                    address: l.dia_chi
                 }
             }),
             // benefits: company.ds_phuc_loi,
@@ -211,7 +208,7 @@ export const addCompany = cache(async (req) => {
                 }
             } = req
 
-            console.log(email)
+        console.log(email)
 
         // check if email already exists
         const existingUserByEmail = await db.taiKhoan.findUnique({
@@ -229,6 +226,7 @@ export const addCompany = cache(async (req) => {
                 tinh_thanh_id: loc.province.value,
                 branch_name: loc.name,
                 dia_chi: loc.address,
+                is_branch: loc.is_branch,
             }
         })
 

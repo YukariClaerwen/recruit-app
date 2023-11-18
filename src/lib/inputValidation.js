@@ -141,7 +141,7 @@ export function postCompanyYup() {
                 {
                     province: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
                     name: yup.string().required('Vui lòng nhập thông tin.'), 
-                    adress: yup.string().required('Vui lòng nhập thông tin.'),
+                    address: yup.string().required('Vui lòng nhập thông tin.'),
                 }
             )).min(1,'Vui lòng nhập thông tin.'),
             benefits: yup.array().of(yup.object().shape({
@@ -160,7 +160,7 @@ export function postCompanyYup() {
             contact_person: "",
             phone_number: "",
             description: "",
-            locations: [{ province: undefined, name: "", adress: "", is_branch: false }],
+            locations: [{ province: undefined, name: "", address: "", is_branch: false }],
             benefits: [{ benefit: undefined, description: "" }],
         }
     }

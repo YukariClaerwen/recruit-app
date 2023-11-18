@@ -6,7 +6,7 @@ export default async function Page({ params }) {
 
     const company = await getCompany(params.id)
 
-    console.log(company)
+    // console.log(company)
 
 
     // console.log(splitString(await job.descriptions))

@@ -114,9 +114,7 @@ const CompanyDetail = ({ data }) => {
                                     <PiMapPinThin size="40" color="#606060" />
                                     <div>
                                         <p>Địa điểm</p>
-                                        <p>
-                                            {data.location}
-                                        </p>
+                                        <Locations company={data} />
                                     </div>
                                 </li>
                             </ul>
@@ -133,6 +131,7 @@ export default CompanyDetail
 
 
 const Benefits = ({ company }) => {
+    console.log(company.location)
     return (
         <>
             {/* icon scripts */}
@@ -145,6 +144,21 @@ const Benefits = ({ company }) => {
             />
             {company.benefits.map((b, index) =>
                 <p key={index}>  <b><i className={"ph " + b.icon}></i> {b.name}</b>: {b.description}</p>
+            )}
+        </>
+    )
+}
+
+const Locations = ({company}) => {
+    console.log(company.location)
+    return (
+        <>
+            {company.location.map((l, index) =>
+                <div key={index}>
+                    <div><b> {l.name}</b> - {l.province}</div>
+                    {l.address ? <div>{l.address}</div> : <></>}
+                </div>
+                
             )}
         </>
     )

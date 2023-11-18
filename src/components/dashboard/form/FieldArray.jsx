@@ -123,7 +123,7 @@ export const FieldArrayLocations = props => {
                 <ButtonSub
                     type="button"
                     onClick={() => {
-                        append({ province: undefined, name: "", adress: "", is_branch: false });
+                        append({ province: undefined, name: "", address: "", is_branch: false });
                     }}
                 >
                     <Plus size={20} weight="regular" />

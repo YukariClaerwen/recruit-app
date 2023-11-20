@@ -6,16 +6,14 @@ import { getServerSession } from "next-auth"
 
 const page = async () => {
     const session = await getServerSession(authOptions);
-    
+
     const data = await getUser();
     const users = await data.users;
 
-    // console.log(users)
-
     if (session?.user) {
         return (
-            <UserList data={users}/>
-            
+            <UserList data={users} />
+
         )
     }
 

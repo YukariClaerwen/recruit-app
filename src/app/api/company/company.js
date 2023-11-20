@@ -16,6 +16,7 @@ export const getCompanies = cache(async () => {
                 linh_vuc: true,
                 logo: true,
                 images: true,
+                cover: true,
                 _count: {
                     select: {
                         ds_tin_tuyen_dung: true
@@ -53,6 +54,7 @@ export const getCompanies = cache(async () => {
                     industry: c.linh_vuc.ten_linh_vuc,
                 }),
                 logo: c.logo,
+                cover: c.cover,
                 images: c.images,
                 jobs_count: c._count.ds_tin_tuyen_dung,
             }
@@ -127,8 +129,9 @@ export const getCompany = cache(async (id) => {
                 },
                 ds_dia_diem: {
                     select: {
-                        is_branch: true,
-                        tinh_thanh: true
+                        tinh_thanh: true,
+                        branch_name: true,
+                        dia_chi: true,
                     }
                 },
                 ds_phuc_loi: {
@@ -159,7 +162,7 @@ export const getCompany = cache(async (id) => {
             description: company.mo_ta,
             phone_number: company.so_dien_thoai,
             logo: company.logo,
-            images: company.images,
+            cover: company.cover,
             location: company.ds_dia_diem.map(l => {
                 return {
                     name: l.branch_name,
@@ -203,12 +206,11 @@ export const addCompany = cache(async (req) => {
                     email, password, cPassword,
                     company_name, company_size,
                     industry, nation, contact_person,
-                    phone_number, description, locations, benefits,
+                    phone_number, description, locations, benefits, logo
                     // logo, images
                 }
             } = req
 
-        console.log(email)
 
         // check if email already exists
         const existingUserByEmail = await db.taiKhoan.findUnique({
@@ -255,7 +257,8 @@ export const addCompany = cache(async (req) => {
                         },
                         ds_phuc_loi: {
                             createMany: { data: _benefits },
-                        }
+                        },
+                        logo: logo
                     }
                 }
             }

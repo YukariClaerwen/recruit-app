@@ -167,6 +167,7 @@ model NhaTuyenDung {
   tinh_thanh_id     Int?
   tu_van_vien_id    Int?
   images            Json?                   @db.JsonB
+  cover             String?                 @db.Text
   ds_thich          CongTyYeuThich[]
   ds_don_ung_tuyen  DonUngTuyen[]
   ds_nganh          NganhNgheNhaTuyenDung[]

@@ -69,7 +69,7 @@ const PostJobForm = (props) => {
   useEffect(() => {
     form.reset({ ...values });
     fetchData();
-  }, [form, fetchData, values])
+  }, [form])
 
   // console.log(form.getValues())
   const onSubmit = async (value) => {
@@ -129,7 +129,7 @@ const PostJobForm = (props) => {
   }
 
   return (
-    <Dcard title="Đăng việc làm">
+    <Dcard title="Đăng việc làm" {...props}>
       <FormProvider {...form}>
         <Form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="mb-4"><h5>Mô tả công việc</h5></div>
@@ -230,7 +230,7 @@ const PostJobForm = (props) => {
               label="Email nhận hồ sơ"
               type="text"
               placeholder="VD: hr@company.com, manager@company.com"
-              frmText={`Nếu nhập nhiều email, mỗi email phải cách nhau bằng dấu ",".`}>
+              frmtext={`Nếu nhập nhiều email, mỗi email phải cách nhau bằng dấu ",".`}>
             </FrmInput>
 
             <div className="mb-3">

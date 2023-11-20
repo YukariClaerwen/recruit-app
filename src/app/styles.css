@@ -213,7 +213,9 @@ h5,
 .top-header {
   background-color: var(--lightGray);
 }
-
+.btn:disabled, .btn.disabled, fieldset:disabled .btn {
+  border-color: var(--gray);
+}
 .circle-btn {
   border-color: var(--purple);
   color: var(--purple);

@@ -105,7 +105,7 @@ export const FieldArrayLocations = props => {
                                     placeholder="Tên" />
                             </div>
                             <div className="w-1/4">
-                                <FrmInput name={`locations.${index}.adress`}
+                                <FrmInput name={`locations.${index}.address`}
                                     type="text"
                                     placeholder="Địa chỉ" className="col-span-2" />
                             </div>

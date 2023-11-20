@@ -106,13 +106,13 @@ export const registerYup = {
 
 export function postCompanyYup() {
     const locationSchema = {
-        province: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
-        name: yup.string().required('Vui lòng nhập thông tin.'), 
+        province: yup.mixed().required('Vui lòng chọn tỉnh thành.'),
+        name: yup.string().required('Vui lòng nhập thông tin.'),
         adress: yup.string().required('Vui lòng nhập thông tin.'),
     }
     const benefitSchema = {
-        benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
-        description: yup.string().required('Vui lòng nhập thông tin.'), 
+        benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'),
+        description: yup.string().required('Vui lòng nhập thông tin.'),
     }
     const res = {
         schema: yup.object().shape({
@@ -139,14 +139,14 @@ export function postCompanyYup() {
             description: yup.string().required('Vui lòng nhập thông tin.'),
             locations: yup.array().of(yup.object().shape(
                 {
-                    province: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
-                    name: yup.string().required('Vui lòng nhập thông tin.'), 
+                    province: yup.mixed().required('Vui lòng chọn tỉnh thành.'),
+                    name: yup.string().required('Vui lòng nhập thông tin.'),
                     address: yup.string().required('Vui lòng nhập thông tin.'),
                 }
-            )).min(1,'Vui lòng nhập thông tin.'),
+            )).min(1, 'Vui lòng nhập thông tin.'),
             benefits: yup.array().of(yup.object().shape({
-                benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'), 
-                description: yup.string().required('Vui lòng nhập thông tin.'), 
+                benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'),
+                description: yup.string().required('Vui lòng nhập thông tin.'),
             })).required('Vui lòng nhập thông tin.'),
         }).required("Vui lòng nhập thông tin."),
         default: {
@@ -235,6 +235,51 @@ export function postJobYup(job) {
         }
     }
     return res;
+}
+
+export function file_validate(selectedFile, type) {
+    // const MIN_FILE_SIZE = 1024 // 1MB
+    const MAX_FILE_SIZE = 5120 // 5MB
+
+    if (!selectedFile) {
+        return {
+            message: "Hãy chọn file",
+            status: false
+        }
+    }
+    
+    const fileSizeKiloBytes = selectedFile.size / 1024
+    if (fileSizeKiloBytes > MAX_FILE_SIZE) {
+        return {
+            message: "File đăng tải chỉ được phép có dung lượng tối đa là 5 mb",
+            status: false
+        }
+    }
+
+    if(type === "image") {
+    
+        const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.webp)$/i;
+        if (!allowedExtensions.exec(selectedFile.name)) {
+            return {
+                message: "Chỉ được tải lên file hình có đuôi *.jpeg, *.jpg, *.png, *.gif",
+                status: false
+            }
+        }
+    
+    } else if(type == "application") {
+        const allowedExtensions = /(\.doc|\.docx|\.pdf)$/i;
+        if (!allowedExtensions.exec(selectedFile.name)) {
+            return {
+                message: "Chỉ được tải lên file hình có đuôi *.doc, *.docx, *.pdf",
+                status: false
+            }
+        }
+    }
+
+    return {
+        message: "",
+        status: true
+    }
 }
 
 // input attr

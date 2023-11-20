@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { PiAddressBookThin, PiBuildingsThin, PiFilesThin, PiGlobeHemisphereEastThin, PiHandCoinsThin, PiListChecksThin, PiMapPinThin, PiPhoneThin, PiSuitcaseThin } from "react-icons/pi";
 import JobList from "./jobs";
+import Image from "next/image";
 
 
 const CompanyDetail = ({ data }) => {
@@ -17,22 +18,24 @@ const CompanyDetail = ({ data }) => {
             <div className="job-head-block bgcolor-DarkPurple text-white relative z-10">
                 <div className="px-3.5 pt-5 lg:px-20">
                     <div className="px-5 flex justify-between items-start">
-                        <div className="">
-                            <h3 className="font-logo">{data.company_name}</h3>
-                            <div className="flex justify-start gap-3 items-center">
-                                {data.logo ? (
-                                    <div className="company-logo">
-
-                                    </div>
-                                ) : <></>}
-
-                                <div>
-                                    <p>{data.address}</p>
+                        <div className="flex justify-start gap-3 items-center">
+                            {data.logo ? (
+                                <div className="company-logo relative">
+                                    <Image
+                                        src={data.logo}
+                                        width={150}
+                                        height={150}
+                                        objectFit="none"
+                                        alt="" />
                                 </div>
+                            ) : <></>}
+                            <div className="space-y-2">
+                                <h4 className="font-logo">{data.company_name}</h4>
+                                <p>{data.industry}</p>
                             </div>
                         </div>
-                        <div className="sticky-top2 top-50">
-                        </div>
+                        {/* <div className="sticky-top2 top-50">
+                        </div> */}
                     </div>
                 </div>
             </div>
@@ -110,7 +113,7 @@ const CompanyDetail = ({ data }) => {
                                         <p>{data.industry}</p>
                                     </div>
                                 </li>
-                                <li className="py-3 flex justify-start items-center gap-x-4">
+                                <li className="py-3 flex justify-start gap-x-4">
                                     <PiMapPinThin size="40" color="#606060" />
                                     <div>
                                         <p>Địa điểm</p>
@@ -149,16 +152,16 @@ const Benefits = ({ company }) => {
     )
 }
 
-const Locations = ({company}) => {
+const Locations = ({ company }) => {
     console.log(company.location)
     return (
         <>
             {company.location.map((l, index) =>
                 <div key={index}>
-                    <div><b> {l.name}</b> - {l.province}</div>
-                    {l.address ? <div>{l.address}</div> : <></>}
+                    <div><b> {l.province}</b></div>
+                    {l.address ? <div>{l.name} - {l.address}</div> : <></>}
                 </div>
-                
+
             )}
         </>
     )

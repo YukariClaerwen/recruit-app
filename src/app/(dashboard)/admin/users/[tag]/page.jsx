@@ -7,13 +7,13 @@ import React from 'react'
 
 const page = async ({ params }) => {
 
-  const data = await getUser();
   // const candidates = await data.tag.candidates;
   // const consultants = await data.tag.consultants;
   // const admins = await data.tag.admins;
 
   if (params.tag === 'recruiter') {
 
+    const data = await getUser();
     const companies = await getCompanies()
     const recruiters = await data.tag.recruiters;
     

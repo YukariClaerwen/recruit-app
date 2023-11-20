@@ -65,8 +65,9 @@ export const ApplyBtn = ({ title, id }) => {
   const router = useRouter();
   const { toast } = useToast();
   const inputFileRef = useRef(null);
-  const onClose = () => {
+  const onClose = async () => {
     router.push(pathname, { scroll: false }, { shallow: true });
+    await onOk()
     // form.resetField("inputField");
   }
   const searchParams = useSearchParams();
@@ -83,7 +84,17 @@ export const ApplyBtn = ({ title, id }) => {
   const handleShow = (e) => {
     e.stopPropagation();
   }
-  const onOk = () => { }
+  const onOk = async () => { 
+    if(blob) {
+      const response = await fetch(
+          `/api/file/delete?url=${blob.url}`,
+          {
+              method: 'DELETE'
+          },
+      );
+      setBlob(null)
+  }    
+  }
   const onShow = () => { }
 
   const validate_file = async (event) => {
@@ -113,9 +124,19 @@ export const ApplyBtn = ({ title, id }) => {
           uploaded: true,
           loading: false
         })
+      } else {
+        setBtnState({
+          uploaded: false,
+          loading: false
+        })
       }
 
       setBlob(newBlob);
+    } else {
+      setBtnState({
+        uploaded: false,
+        loading: false
+      })
     }
 
   }
@@ -179,7 +200,7 @@ export const ApplyBtn = ({ title, id }) => {
         </Link>
       </div>
 
-      <Dialog title={title} onClose={onClose} onOk={onOk} onShow={onShow} onSave={onSubmit} btn={btnState} >
+      <Dialog title={title} onClose={onClose} onShow={onShow} onSave={onSubmit} btn={btnState} >
 
         { session?.user ?
         

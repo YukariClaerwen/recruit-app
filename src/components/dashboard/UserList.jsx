@@ -126,7 +126,7 @@ const UserList = (props) => {
 
     return (
         <Dcard title="Người dùng" des={`${users.length} tài khoản`} toplinks={links}>
-            <Table striped hover>
+            <Table striped hover className="align-middle">
                 <thead>
                     <tr>
                         <th></th>

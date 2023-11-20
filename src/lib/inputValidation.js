@@ -270,7 +270,7 @@ export function file_validate(selectedFile, type) {
         const allowedExtensions = /(\.doc|\.docx|\.pdf)$/i;
         if (!allowedExtensions.exec(selectedFile.name)) {
             return {
-                message: "Chỉ được tải lên file hình có đuôi *.doc, *.docx, *.pdf",
+                message: "Chỉ được tải lên file tài liệu có đuôi *.doc, *.docx, *.pdf",
                 status: false
             }
         }

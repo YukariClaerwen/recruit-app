@@ -12,6 +12,8 @@ import NumberFormat from "../format/number";
 import { FaRegBookmark } from "react-icons/fa6";
 import Link from "next/link";
 import JobFav from "./jobfavorite";
+import { Button } from "react-bootstrap";
+import { Check } from "@phosphor-icons/react/dist/ssr";
 
 const JobDetail = ({ data }) => {
 
@@ -48,7 +50,15 @@ const JobDetail = ({ data }) => {
             </div>
             <div className="flex justify-end gap-3 items-center">
               <JobFav job={data} />
-              <ApplyBtn title={data.title} id={data.id} />
+              {
+                data.isApplied
+                  ? <Button variant="outline-secondary" disabled className="flex gap-2 bg-white rounded-pill">
+                      <Check size={20} weight="thin" />
+                      Đã ứng tuyển
+                    </Button>
+                  : <ApplyBtn title={data.title} id={data.id} />
+              }
+
             </div>
           </div>
         </div>

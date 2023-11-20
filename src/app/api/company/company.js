@@ -206,7 +206,8 @@ export const addCompany = cache(async (req) => {
                     email, password, cPassword,
                     company_name, company_size,
                     industry, nation, contact_person,
-                    phone_number, description, locations, benefits, logo
+                    phone_number, description, locations, benefits, 
+                    logo,cover,
                     // logo, images
                 }
             } = req
@@ -258,7 +259,8 @@ export const addCompany = cache(async (req) => {
                         ds_phuc_loi: {
                             createMany: { data: _benefits },
                         },
-                        logo: logo
+                        logo: logo,
+                        cover: cover,
                     }
                 }
             }
@@ -276,16 +278,19 @@ export const addCompany = cache(async (req) => {
 
 export const updateCompany = cache(async (req) => {
     try {
-        const { company_id,
-            company_name, address, size,
-            nation, contact_person, industry,
-            description, logo, location,
-            benefits, phone,
-        } = req;
+        const {
+            value: {
+                company_id,
+                // email, password, cPassword,
+                company_name, company_size,
+                industry, nation, contact_person,
+                phone_number, description, locations, benefits, 
+                logo,cover,
+            }
+        } = req
 
         const update_data = {
             ten_cong_ty: company_name,
-            dia_chi: address,
             quy_mo_id: size,
             quoc_gia: nation,
             nguoi_lien_he: contact_person,

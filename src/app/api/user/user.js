@@ -1,10 +1,17 @@
 
 import { db } from "@/lib/db";
 import { cache } from "react";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth"
 export const revalidate = 3600 // revalidate the data at most every hour
 
 export const getUser = cache(async () => {
     try {
+        const session = await getServerSession(authOptions);
+
+        if(session?.user.role != 'admin') {
+            return({ message: "Bạn không được sử dụng chức năng này", status: "404"})
+        }
         const users = await db.taiKhoan.findMany({
             where: { is_deleted: false},
             select: {

@@ -7,19 +7,18 @@ import { del } from '@vercel/blob';
 
 export const runtime = 'edge';
 
+
 export const applyJob = cache(async (req) => {
     try {
         const { cv, jobId } = req
         const session = await getServerSession(authOptions);
 
         if (!session.user) {
-            const urlToDelete = cv;
-            const deleteCV = await del(urlToDelete);
+            const deleteCV = await del(cv);
             return ({ data: deleteCV, message: "Vui lòng đăng nhập để thực hiện chức năng này", status: 404 });
         }
         if (session.user.role != 'user') {
-            const urlToDelete = cv;
-            const deleteCV = await del(urlToDelete);
+            const deleteCV = await del(cv);
             return ({ data: deleteCV, message: "Vui lòng đăng nhập tài khoản ứng viên để thực hiện chức năng này", status: 404 });
         }
         const user = await db.taiKhoan.findUnique({
@@ -38,6 +37,19 @@ export const applyJob = cache(async (req) => {
         })
 
         const compId = await job.nha_tuyen_dung_id;
+
+        const existing = await db.donUngTuyen.findFirst({
+            where: {
+                viec_lam_id: parseInt(jobId),
+                ung_vien_id: userId,
+                is_deleted: false
+            }
+        })
+
+        if(existing) {
+            const deleteCV = await del(cv);
+            return ({ data: deleteCV, message: "Bạn đã ứng tuyển vào công việc này, vui lòng ứng tuyển một công việc khác", status: 404 });
+        }
 
         const application = await db.donUngTuyen.create({
             data: {

@@ -35,6 +35,13 @@ const selectJobList = {
                 }
             }
         }
+    },
+    _count: {
+        select: {
+            ds_don_ung_tuyen: {
+                where: {is_deleted: false}
+            }
+        }
     }
 }
 
@@ -57,6 +64,7 @@ const defaultValues = (item) => {
         tags: item.ds_tu_khoa.map(tag => {
             return tag['tu_khoa']['ten_tu_khoa']
         }),
+        appliedNumber: item._count.ds_don_ung_tuyen,
         // isSaved: (item.ds_thich && item.ds_thich.length) > 0 ? true : false
     }
 }
@@ -68,7 +76,8 @@ const returnJobsItem = async (jobs) => {
             return {
                 ...defaultValues(item),
                 salary: false,
-                isSaved: await checkFav(item.id)
+                isSaved: await checkFav(item.id),
+                isApplied: await checkApplied(item.id),
             }
         }
         return {
@@ -79,6 +88,7 @@ const returnJobsItem = async (jobs) => {
                 currency: item.luong_loai_tien,
             },
             isSaved: await checkFav(item.id),
+            isApplied: await checkApplied(item.id),
         }
     }))
     return data
@@ -131,31 +141,6 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
     try {
         // let take = 10;
         let skip = take ? (page - 1) * take : undefined;
-
-        // let select;
-
-        // if (session?.user) {
-        //     const user = await db.taiKhoan.findUnique({
-        //         where: { email: session?.user.email },
-        //         select: {
-        //             ung_vien: {
-        //                 select: {
-        //                     ung_vien_id: true
-        //                 }
-        //             }
-        //         }
-        //     })
-        //     select = {
-        //         ...selectJobList,
-        //         ds_thich: {
-        //             where: { ung_vien_id: user.ung_vien.ung_vien_id, is_deleted: false },
-        //             select: { id: true },
-        //         }
-        //     }
-        // } else {
-        //     select = selectJobList
-        // }
-
 
         const [jobs, count] = await db.$transaction([
             db.viecLam.findMany({
@@ -368,6 +353,7 @@ export const getJobById = cache(async (id, viewFor) => {
         })
 
         const save = await checkFav(job.id)
+        const apply = await checkApplied(job.id)
 
         const data = {
             id: job.id,
@@ -430,7 +416,8 @@ export const getJobById = cache(async (id, viewFor) => {
                     name: tag.tu_khoa.ten_tu_khoa
                 }
             }),
-            isSaved: save
+            isSaved: save,
+            isApplied: apply
 
         }
 
@@ -558,7 +545,7 @@ export const updateJob = cache(async (req) => {
 export const checkFav = async (jobId) => {
     const session = await getServerSession(authOptions);
     // console.log(session)
-    if(session?.user && session?.user.role == 'user') {
+    if (session?.user && session?.user.role == 'user') {
         const user = await db.taiKhoan.findUnique({
             where: { email: session?.user.email },
             select: {
@@ -586,8 +573,39 @@ export const checkFav = async (jobId) => {
         return false
     }
 }
+export const checkApplied = async (jobId) => {
+    const session = await getServerSession(authOptions);
+    // console.log(session)
+    if (session?.user && session?.user.role == 'user') {
+        const user = await db.taiKhoan.findUnique({
+            where: { email: session?.user.email },
+            select: {
+                ung_vien: {
+                    select: {
+                        ung_vien_id: true
+                    }
+                }
+            }
+        })
 
-export const getSavedJobsById = cache(async () => {
+        const jobs = await db.donUngTuyen.findFirst({
+            where: {
+                ung_vien_id: user.ung_vien.ung_vien_id,
+                viec_lam_id: jobId,
+                is_deleted: false
+            },
+        })
+        if (!jobs) {
+            return false
+        } else {
+            return true
+        }
+    } else {
+        return false
+    }
+}
+
+export const getJobsByListOfUser = cache(async (list) => {
     try {
         // let take = 10;
         const session = await getServerSession(authOptions);
@@ -603,14 +621,34 @@ export const getSavedJobsById = cache(async () => {
             }
         })
 
-        const jobs = await db.viecLamYeuThich.findMany({
-            where: { ung_vien_id: user.ung_vien.ung_vien_id, is_deleted: false },
+        const findQuery = {
+            where: { 
+                ung_vien_id: user.ung_vien.ung_vien_id, 
+                is_deleted: false,
+                viec_lam: {
+                    is: {
+                        is_deleted: false
+                    }
+                }
+            },
             select: {
                 viec_lam: {
                     select: selectJobList
-                }
+                },
+            },
+            orderBy: {
+                created_at: 'desc'
             }
-        })
+        }
+        let jobs = []
+        if (list === 'applied') {
+            jobs = await db.donUngTuyen.findMany({
+                ...findQuery
+            })
+        }
+        else if (list === 'saved')
+            jobs = await db.viecLamYeuThich.findMany(findQuery)
+
         const arr = await jobs.map(j => {
             return j['viec_lam']
         })

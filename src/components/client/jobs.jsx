@@ -9,6 +9,8 @@ import JobFav from "./jobfavorite";
 import NumberFormat from "../format/number";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { Button } from "react-bootstrap";
+import { Check } from "@phosphor-icons/react/dist/ssr";
 
 const JobList = ({ data }) => {
   let jobs = data.data
@@ -51,9 +53,12 @@ const JobList = ({ data }) => {
                     <span>{job.location.name}</span>
                   </div>
                 </div>
-                <div>
+                <div className="space-x-4">
                     { pathname.includes("/admin/") 
-                    ? <LinkEdit job={job} />
+                    ? <>
+                      <LinkAppliedCv job={job} />
+                      <LinkEdit job={job} />
+                    </>
                     : <LinkApply job={job} />  
                   }
                 </div>
@@ -69,6 +74,16 @@ export default JobList;
 
 
 const LinkApply = ({ job }) => {
+  if(job.isApplied) {
+    return(
+      <div className="flex justify-items-start gap-1">
+        <Button variant="secondary" disabled className="flex gap-2">
+          <Check size={20} weight="thin" /> 
+            Đã ứng tuyển
+          </Button>
+      </div>
+    )
+  }
   return (
     <Link href={`/jobs/${job.id}?title=${job.title}&showDialog=y&action=apply&id=${job.id}`}>
       <div className="circle-arrow-btn flex justify-items-start gap-1">
@@ -85,5 +100,19 @@ const LinkEdit = ({job}) => {
         Edit
       </div>
     </Link>
+  )
+}
+const LinkAppliedCv = ({job}) => {
+  if(job.appliedNumber > 0) {
+    return (
+      <Link href={`/admin/jobs/${job.id}?title=${job.title}`}>
+        <div className="circle-arrow-btn flex justify-items-start gap-1">
+          {job.appliedNumber} Đơn ứng tuyển
+        </div>
+      </Link>
+    )
+  }
+  return (
+    <></>
   )
 }

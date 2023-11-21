@@ -191,7 +191,7 @@ export const searchJobs = cache(async (key, location, page, sort) => {
         let take = 10;
         let skip = (page - 1) * take;
         let locArr = []
-        if (location != null && location != "all" && !Array.isArray(location)) {
+        if (location != null && location != "" && !Array.isArray(location)) {
             locArr.push(parseInt(location));
         } else if (Array.isArray(location)) {
             locArr = location.map(l => {
@@ -212,10 +212,15 @@ export const searchJobs = cache(async (key, location, page, sort) => {
                         }
                     }
                 }
+            },
+            {
+                nha_tuyen_dung: {
+                    ten_cong_ty: { contains: key, mode: 'insensitive'}
+                }
             }
         ]
 
-        if (location == "all" || location == null) {
+        if (location == "" || location == null) {
             query = {
                 OR: keys,
                 is_deleted: false,
@@ -236,6 +241,7 @@ export const searchJobs = cache(async (key, location, page, sort) => {
                 // },
             }
         }
+
 
         const [jobs, count] = await db.$transaction([
             db.viecLam.findMany({

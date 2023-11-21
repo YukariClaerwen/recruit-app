@@ -19,7 +19,7 @@ export default async function Jobs({ searchParams }) {
              : "default"
 
   if (searchParams?.page) page = searchParams?.page;
-  if ((key == '' && location == 'all') || (!searchParams?.key && !searchParams?.location)) {
+  if ((key == '' && location == '') || (!searchParams?.key && !searchParams?.location)) {
     data = await getJobs(10, page, sort, tag, major, location);
   } else {
     data = await searchJobs(key, location, page, sort)

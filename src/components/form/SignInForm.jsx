@@ -38,7 +38,7 @@ const SignInForm = () => {
                 router.push('/admin');
             }
             else if(session?.data.user.role == 'user') {
-                router.push('/')
+                router.back()
             }
         }
     }, [session, router])

@@ -27,6 +27,38 @@ const page = async ({ params }) => {
     )
   }
 
+  if(params.tag === 'admin') {
+    const data = await getUser();
+    const admins = await data.tag.admins;
+    return (
+      <div className="container pt-5 space-y-6">
+        <UserList data={admins} />
+      </div>
+    )
+  }
+
+  if(params.tag === 'consultant') {
+    const data = await getUser();
+    const consultants = await data.tag.consultants;
+    return (
+      <div className="container pt-5 space-y-6">
+        <UserList data={consultants} />
+      </div>
+    )
+  }
+
+  if(params.tag === 'candidate') {
+    const data = await getUser();
+    const candidates = await data.tag.candidates;
+    return (
+      <div className="container pt-5 space-y-6">
+        <UserList data={candidates} />
+      </div>
+    )
+  }
+
+
+
   return (
     <div>{params.tag} page</div>
   )

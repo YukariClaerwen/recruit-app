@@ -2,13 +2,15 @@ import { db } from "@/lib/db";
 import { hash } from "bcrypt";
 import { cache } from "react";
 import { getJobsByCompany } from "../job/job";
+import { del } from "@vercel/blob";
 
 export const revalidate = 3600 // revalidate the data at most every hour
 
-export const getCompanies = cache(async () => {
+export const getCompanies = cache(async (take) => {
     try {
 
         const companies = await db.nhaTuyenDung.findMany({
+            take: take,
             where: { is_deleted: false },
             select: {
                 nha_tuyen_dung_id: true,
@@ -23,11 +25,16 @@ export const getCompanies = cache(async () => {
                     }
                 }
             },
-            orderBy: {
-                ds_tin_tuyen_dung: {
-                    _count: 'desc',
+            orderBy: [
+                {
+                    ds_tin_tuyen_dung: {
+                        _count: 'desc',
+                    },
                 },
-            }
+                {
+                    created_at: 'desc'
+                }
+            ]
             // include: {
             //     quy_mo: true,
             //     linh_vuc: true,
@@ -150,14 +157,19 @@ export const getCompany = cache(async (id) => {
         const result = {
             id: company.nha_tuyen_dung_id,
             company_name: company.ten_cong_ty,
-            address: company.dia_chi,
             ...(company.quy_mo == null ? { company_size: false } : {
-                company_size: company.quy_mo.quy_mo,
+                company_size: {
+                    id: company.quy_mo.id,
+                    size: company.quy_mo.quy_mo,
+                }
             }),
             nation: company.quoc_gia,
             contact_person: company.nguoi_lien_he,
             ...(company.linh_vuc == null ? { industry: false } : {
-                industry: company.linh_vuc.ten_linh_vuc,
+                industry: {
+                    id: company.linh_vuc.id,
+                    name: company.linh_vuc.ten_linh_vuc,
+                }
             }),
             description: company.mo_ta,
             phone_number: company.so_dien_thoai,
@@ -165,17 +177,23 @@ export const getCompany = cache(async (id) => {
             cover: company.cover,
             location: company.ds_dia_diem.map(l => {
                 return {
+                    province: {
+                        id: l.tinh_thanh.id,
+                        name: l.tinh_thanh.ten_tinh_thanh,
+                    },
                     name: l.branch_name,
-                    province: l.tinh_thanh.ten_tinh_thanh,
-                    address: l.dia_chi
+                    address: l.dia_chi,
                 }
             }),
             // benefits: company.ds_phuc_loi,
             benefits: company.ds_phuc_loi.map(b => {
                 return {
-                    name: b.phuc_loi.ten_phuc_loi,
+                    benefit: {
+                        id: b.phuc_loi.id,
+                        name: b.phuc_loi.ten_phuc_loi,
+                        icon: b.phuc_loi.icon,
+                    },
                     description: b.mo_ta,
-                    icon: b.phuc_loi.icon,
                 }
             }),
             ...(company.tu_van_vien == null ? { consultant: false } : {
@@ -263,12 +281,17 @@ export const addCompany = cache(async (req) => {
                         cover: cover,
                     }
                 }
+            },
+            include: {
+                nha_tuyen_dung: {
+                    select: { nha_tuyen_dung_id: true}
+                }
             }
         });
 
         const { mat_khau, ...rest } = recruiter
 
-        return ({ data: rest, message: "Tạo thêm nhà tuyển dụng thành công.", status: 201 });
+        return ({ data: rest, message: "Tạo nhà tuyển dụng thành công.", status: 201 });
 
     } catch (err) {
         console.log(err)
@@ -289,16 +312,53 @@ export const updateCompany = cache(async (req) => {
             }
         } = req
 
+        const old = await db.nhaTuyenDung.findUnique({
+            where: {nha_tuyen_dung_id: company_id},
+            select: {
+                logo: true,
+                cover: true
+            }
+        })
+
+        if(logo !== old.logo && old.logo !== null) {
+            const deleteItem = await del(old.logo);
+        }
+        if(cover !== old.cover && old.cover != null) {
+            const deletedItem = await del(old.cover);
+        }
+
+        const _locations = locations.map(loc => {
+            return {
+                tinh_thanh_id: loc.province.value,
+                branch_name: loc.name,
+                dia_chi: loc.address,
+                is_branch: loc.is_branch,
+            }
+        })
+
+        const _benefits = benefits.map(b => {
+            return {
+                phuc_loi_id: b.benefit.value,
+                mo_ta: b.description
+            }
+        })
+
         const update_data = {
             ten_cong_ty: company_name,
-            quy_mo_id: size,
+            quy_mo_id: company_size.value,
             quoc_gia: nation,
             nguoi_lien_he: contact_person,
-            linh_vuc_id: industry,
+            linh_vuc_id: industry.value,
             mo_ta: description,
+            so_dien_thoai: phone_number,
+            ds_dia_diem: {
+                createMany: { data: _locations }
+            },
+            ds_phuc_loi: {
+                createMany: { data: _benefits },
+            },
             logo: logo,
-            tinh_thanh_id: location,
-            so_dien_thoai: phone
+            cover: cover,
         }
 
         const delete_benefits = await db.phucLoiNhaTuyenDung.deleteMany({
@@ -306,21 +366,22 @@ export const updateCompany = cache(async (req) => {
                 nha_tuyen_dung_id: company_id
             }
         })
+        const delete_locations = await db.diaDiemNhaTuyenDung.deleteMany({
+            where: {
+                nha_tuyen_dung_id: company_id
+            }
+        })
         const company = await db.nhaTuyenDung.update({
             where: { nha_tuyen_dung_id: company_id },
-            data: {
-                ...update_data,
-                ds_phuc_loi: {
-                    createMany: { data: benefits },
-                }
-            },
+            data: update_data,
             include: {
                 ds_phuc_loi: true,
+                ds_dia_diem: true,
             }
         })
 
         const result = company;
-        return ({ data: result, status: 201 });
+        return ({ data: result, message: "Cập nhật thành công.", status: 201 });
 
     } catch (err) {
         return ({ message: err.message, status: 500 })

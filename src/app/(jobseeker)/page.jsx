@@ -15,12 +15,16 @@ import Majors from "@/components/client/majors";
 import { getMajors } from "../api/job/major";
 import { getTags } from "../api/job/tag";
 import Alert from "@/components/alert";
+import { getCompanies } from "../api/company/company";
+import Companies from "@/components/client/companies";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
   const data = await getJobs(6);
   const majors = await getMajors(12);
   const tags = await getTags(5)
+
+  const companies = await getCompanies(3)
 
   // console.log(session)
 
@@ -178,7 +182,26 @@ export default async function Home() {
       </div>
       {/* end recommend major */}
 
-      <Alert/>
+      <div className="bgcolor-LightGray w-full py-20 px-35 lg:px-20">
+        <div className="text-xl lg:text-2xl main-title mr-10 font-logo mb-0 font-medium mb-4">
+          Công ty
+          <span> hàng đầu</span>
+        </div>
+
+
+        <div className="flex flex-col lg:flex-row justify-between gap-4 pb-5 mb-5">
+          <Companies data={companies} />
+        </div>
+        <div className="flex justify-center my-5">
+          <Link href="/jobs/companies" className="btn round-btn-border round-btn rounded-pill">
+            <div className="circle-arrow-btn flex justify-items-start gap-1">
+              Xem tất cả
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      <Alert />
     </div>
   );
 }

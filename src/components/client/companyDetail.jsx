@@ -31,7 +31,7 @@ const CompanyDetail = ({ data }) => {
                             ) : <></>}
                             <div className="space-y-2">
                                 <h4 className="font-logo">{data.company_name}</h4>
-                                <p>{data.industry}</p>
+                                <p>{data.industry.name}</p>
                             </div>
                         </div>
                         {/* <div className="sticky-top2 top-50">
@@ -42,6 +42,11 @@ const CompanyDetail = ({ data }) => {
             <div className="px-3.5 py-5 lg:px-20 z-20 job-main-block">
                 <div className="flex grid grid-cols-2 lg:grid-cols-3 gap-4 job-detail-block bg-white p-5 rounded-4">
                     <div className=" basis-2/3 col-span-2">
+                        {data.cover ?
+                            <div>
+                                <Image src={data.cover} width={1000} height={0} alt={data.company_name} className="w-full h-auto" />
+                            </div>
+                            : null}
                         <div className="job-detail-mainItem mb-5">
                             <div className="mt-3 flex justify-start items-center gap-3 mb-1">
                                 <PiListChecksThin size="35" color="#7B27AB" />
@@ -82,7 +87,7 @@ const CompanyDetail = ({ data }) => {
                                     <PiBuildingsThin size="40" color="#606060" />
                                     <div>
                                         <p>Quy mô</p>
-                                        <p>{data.company_size}</p>
+                                        <p>{data.company_size.size}</p>
                                     </div>
                                 </li>
                                 <li className="py-3 flex justify-start items-center gap-x-4">
@@ -110,7 +115,7 @@ const CompanyDetail = ({ data }) => {
                                     <PiSuitcaseThin size="40" color="#606060" />
                                     <div>
                                         <p>Lĩnh vực</p>
-                                        <p>{data.industry}</p>
+                                        <p>{data.industry.name}</p>
                                     </div>
                                 </li>
                                 <li className="py-3 flex justify-start gap-x-4">
@@ -134,7 +139,6 @@ export default CompanyDetail
 
 
 const Benefits = ({ company }) => {
-    console.log(company.location)
     return (
         <>
             {/* icon scripts */}
@@ -146,19 +150,18 @@ const Benefits = ({ company }) => {
                 }
             />
             {company.benefits.map((b, index) =>
-                <p key={index}>  <b><i className={"ph " + b.icon}></i> {b.name}</b>: {b.description}</p>
+                <p key={index}>  <b><i className={"ph " + b.benefit.icon}></i> {b.benefit.name}</b>: {b.description}</p>
             )}
         </>
     )
 }
 
 const Locations = ({ company }) => {
-    console.log(company.location)
     return (
         <>
             {company.location.map((l, index) =>
                 <div key={index}>
-                    <div><b> {l.province}</b></div>
+                    <div><b> {l.province.name}</b></div>
                     {l.address ? <div>{l.name} - {l.address}</div> : <></>}
                 </div>
 

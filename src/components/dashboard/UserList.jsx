@@ -144,7 +144,7 @@ const UserList = (props) => {
                             <td className="flex justify-center">
                                 {u.image != null ? <Image src={u.image} alt={u.email} width={30} height={30} className="rounded-full"></Image> : <UserCircle size={32} weight="thin" />}
                             </td>
-                            <td>{u.username}</td>
+                            <td>{u.name ? u.name : u.username}</td>
                             <td>{u.email}</td>
                             <td>{(new Date(u.created_at)).toLocaleDateString('en-GB', options)}</td>
                             <td>

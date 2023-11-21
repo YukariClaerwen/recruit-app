@@ -104,18 +104,32 @@ export const registerYup = {
     }
 }
 
-export function postCompanyYup() {
-    const locationSchema = {
-        province: yup.mixed().required('Vui lòng chọn tỉnh thành.'),
-        name: yup.string().required('Vui lòng nhập thông tin.'),
-        adress: yup.string().required('Vui lòng nhập thông tin.'),
-    }
-    const benefitSchema = {
-        benefit: yup.mixed().required('Vui lòng chọn tỉnh thành.'),
-        description: yup.string().required('Vui lòng nhập thông tin.'),
-    }
+export function postCompanyYup(company) {
+
+    const oldLocations = company ? company.location.map(l => {
+        return {
+            province: {
+                value: l.province.id,
+                label: l.province.name
+            },
+            name: l.name,
+            address: l.address
+        }
+    }) : null;
+    const oldBenefits = company ? company.benefits.map(b => {
+        return {
+            benefit: {
+                value: b.benefit.id,
+                label: b.benefit.name,
+                icon: b.benefit.icon,
+            },
+            description: b.description,
+        }
+    }) : null;
+    
     const res = {
         schema: yup.object().shape({
+            ...(company ? null : {
             email: yup
                 .string()
                 .required('Vui lòng nhập email.')
@@ -130,6 +144,7 @@ export function postCompanyYup() {
                 .required("Vui lòng nhập lại mật khẩu.")
                 .password('Mật khẩu phải có tối thiểu 8 ký tự, gồm viết hoa, viết thường, chữ số, và 1 ký tự đặc biệt.')
                 .oneOf([yup.ref("password")], "Mật khẩu không khớp."),
+            }),
             company_name: yup.string().required('Vui lòng nhập thông tin.'),
             nation: yup.string().required('Vui lòng nhập thông tin.'),
             contact_person: yup.string().required('Vui lòng nhập thông tin.'),
@@ -150,18 +165,26 @@ export function postCompanyYup() {
             })).required('Vui lòng nhập thông tin.'),
         }).required("Vui lòng nhập thông tin."),
         default: {
-            email: "",
-            password: "",
-            cPassword: "",
-            company_name: "",
-            company_size: undefined,
-            industry: undefined,
-            nation: "",
-            contact_person: "",
-            phone_number: "",
-            description: "",
-            locations: [{ province: undefined, name: "", address: "", is_branch: false }],
-            benefits: [{ benefit: undefined, description: "" }],
+            ...(company ? null : {
+                email: "",
+                password: "",
+                cPassword: "",
+            }),
+            company_name: company ? company.company_name : "",
+            company_size: company ? {
+                value: company.company_size.id,
+                label: company.company_size.size,
+            } : undefined,
+            industry:  company ? {
+                value: company.industry.id,
+                label: company.industry.name,
+            } : undefined,
+            nation: company ? company.nation : "",
+            contact_person: company ? company.contact_person :  "",
+            phone_number: company ? company.phone_number : "",
+            description:  company ? company.description : "",
+            locations: company ? oldLocations : [{ province: undefined, name: "", address: ""}],
+            benefits: company ? oldBenefits :  [{ benefit: undefined, description: "" }],
         }
     }
     return res;

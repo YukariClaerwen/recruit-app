@@ -23,10 +23,14 @@ const JobList = ({ data }) => {
     <>
       {jobs.map(job =>
         <div className="bg-white p-4 job-block" key={job.id} id={job.id}>
-          <div className="flex justify-between gap-2">
-            <div className="job-logo flex items-center justify-center">
-              <BsFillBuildingsFill size={24} />
-            </div>
+          <div className="flex justify-between gap-3">
+            
+              { job.company?.logo ? 
+              <div className="w-[80px] max-h-[80px] relative flex items-center">
+                <Image src={job.company.logo} width={80} height={80} alt="" />
+              </div>
+               : <div className="job-logo flex items-center justify-center"><BsFillBuildingsFill size={24} /></div>}
+            
             <div className="grow block" style={{ maxWidth: "calc(100% - 80px)" }}>
               <div className="flex justify-between mb-2">
                 <div className="job-title-block">

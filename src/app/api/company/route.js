@@ -31,7 +31,7 @@ export async function POST(req) {
         if (result.status === 409) {
             return NextResponse.json({ message: result.message}, { status: 409 })
         }
-        return NextResponse.json({ companies: result.data, message: result.message }, { status: 201 })
+        return NextResponse.json({ data: result.data, message: result.message }, { status: 201 })
 
     } catch (err) {
         // console.log(err)
@@ -51,7 +51,7 @@ export async function PUT(req) {
         if (result.status === 409) {
             return NextResponse.json({ message: result.message}, { status: 409 })
         }
-        return NextResponse.json({ company: result.data }, { status: 201 })
+        return NextResponse.json({ data: result.data, message: result.message }, { status: 200 })
 
     } catch (err) {
         console.log(err)

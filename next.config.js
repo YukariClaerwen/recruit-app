@@ -14,31 +14,31 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'a8mmiqeghdym61ck.public.blob.vercel-storage.com',
+                hostname: 'yfmukm0ono1f1oxb.public.blob.vercel-storage.com',
                 port: '',
                 pathname: '/*'
             },
             {
                 protocol: 'https',
-                hostname: 'a8mmiqeghdym61ck.public.blob.vercel-storage.com',
+                hostname: 'yfmukm0ono1f1oxb.public.blob.vercel-storage.com',
                 port: '',
                 pathname: '/avatar/*',
             },
             {
                 protocol: 'https',
-                hostname: 'a8mmiqeghdym61ck.public.blob.vercel-storage.com',
+                hostname: 'yfmukm0ono1f1oxb.public.blob.vercel-storage.com',
                 port: '',
                 pathname: '/logo/*',
             },
             {
                 protocol: 'https',
-                hostname: 'a8mmiqeghdym61ck.public.blob.vercel-storage.com',
+                hostname: 'yfmukm0ono1f1oxb.public.blob.vercel-storage.com',
                 port: '',
                 pathname: '/imgs/*',
             },
             {
                 protocol: 'https',
-                hostname: 'a8mmiqeghdym61ck.public.blob.vercel-storage.com',
+                hostname: 'yfmukm0ono1f1oxb.public.blob.vercel-storage.com',
                 port: '',
                 pathname: '/cover/*',
             }

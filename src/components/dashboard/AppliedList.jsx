@@ -1,6 +1,6 @@
 import { Table } from "react-bootstrap"
 import Dcard from "../client/ui/card"
-import { CloudArrowDown, Link as LinkIcon } from "@phosphor-icons/react/dist/ssr";
+import { CloudArrowDown, Link as LinkIcon, UserCircle } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import Image from "next/image";
 

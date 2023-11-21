@@ -109,7 +109,6 @@ export const FieldArrayLocations = props => {
                                     type="text"
                                     placeholder="Địa chỉ" className="col-span-2" />
                             </div>
-                            <FormCheck type="switch" label="Trụ sở" className="min-w-[120px]" {...props.form.register(`locations.${index}.is_branch`)} />
                             <ButtonSub type="button" onClick={() => remove(index)}>
                                 <Minus size={20} weight="regular" />
                             </ButtonSub>
@@ -123,7 +122,7 @@ export const FieldArrayLocations = props => {
                 <ButtonSub
                     type="button"
                     onClick={() => {
-                        append({ province: undefined, name: "", address: "", is_branch: false });
+                        append({ province: undefined, name: "", address: "" });
                     }}
                 >
                     <Plus size={20} weight="regular" />

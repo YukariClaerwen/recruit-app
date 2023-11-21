@@ -5,15 +5,35 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth"
 export const revalidate = 3600 // revalidate the data at most every hour
 
+
+const returnData = (users) => {
+    const result = users.map(user => {
+        return ({
+            id: user.id,
+            email: user.email,
+            username: user.ten_tai_khoan,
+            name: user.name,
+            image: user.image,
+            created_at: user.created_at,
+            role: user.quan_tri != null ? 'admin'
+                : user.tu_van_vien != null ? 'consultant'
+                    : user.nha_tuyen_dung != null ? 'recruiter'
+                        : 'user',
+            Account: user.Account,
+        })
+    })
+    return result
+}
+
 export const getUser = cache(async () => {
     try {
         const session = await getServerSession(authOptions);
 
-        if(session?.user.role != 'admin') {
-            return({ message: "Bạn không được sử dụng chức năng này", status: "404"})
+        if (session?.user.role != 'admin') {
+            return ({ message: "Bạn không được sử dụng chức năng này", status: "404" })
         }
         const users = await db.taiKhoan.findMany({
-            where: { is_deleted: false},
+            where: { is_deleted: false },
             select: {
                 id: true,
                 email: true,
@@ -52,38 +72,31 @@ export const getUser = cache(async () => {
                     },
                 }
 
+            },
+            orderBy: {
+                created_at: "desc"
             }
         });
 
-        const candidates = await users.filter(user => {
+        const ungVien = await users.filter(user => {
             if (user.ung_vien !== null) return user
         })
-        const recruiters = await users.filter(user => {
+        const nhaTuyenDung = await users.filter(user => {
             if (user.nha_tuyen_dung !== null) return user
         })
-        const consultants = await users.filter(user => {
+        const tuVanVien = await users.filter(user => {
             if (user.tu_van_vien !== null) return user
         })
-        const admins = await users.filter(user => {
+        const quanTri = await users.filter(user => {
             if (user.quan_tri !== null) return user
         })
 
-        const data = await users.map(user => {
-            return ({
-                id: user.id,
-                email: user.email,
-                username: user.ten_tai_khoan,
-                name: user.name,
-                image: user.image,
-                created_at: user.created_at,
-                role: user.quan_tri != null ? 'admin'
-                    : user.tu_van_vien != null ? 'consultant'
-                        : user.nha_tuyen_dung != null ? 'recruiter'
-                            : 'user',
-                Account: user.Account,
-            })
-        })
-        // console.log(users)
+        const data = returnData(await users)
+        const candidates = returnData(await ungVien)
+        const recruiters = returnData(await nhaTuyenDung)
+        const consultants = returnData(await tuVanVien)
+        const admins = returnData(await quanTri)
+
 
         const result = {
             count: users.length,
@@ -194,7 +207,7 @@ export const updateRole = cache(async (req) => {
                 : (user.tu_van_vien != null && user.tu_van_vien.is_deleted === false) ? 'consultant'
                     : (user.nha_tuyen_dung != null && user.nha_tuyen_dung.is_deleted === false) ? 'recruiter'
                         : 'user'
-          
+
             const query = {
                 where: { tai_khoan_id: _id },
                 update: { is_deleted: false },
@@ -202,7 +215,7 @@ export const updateRole = cache(async (req) => {
             }
 
             if (await selectField.value == 'admin') {
-               await db.quanTri.upsert(query)
+                await db.quanTri.upsert(query)
             } else if (selectField.value === 'consultant') {
                 await db.tuVanVien.upsert(query)
             } else if (selectField.value === 'recruiter') {

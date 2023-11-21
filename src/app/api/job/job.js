@@ -125,17 +125,19 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
         : sort == "desc" ? sortByDefault
             : sort == "salary" ? sortSal
                 : sortByDefault
+    const whereMajor = {
+        nganh_nghe_id: major ,
+        is_deleted: false,
+    }
+    const whereTag = {
+        ds_tu_khoa: {
+            some: {
+                tu_khoa_id: tag
+            }
+        },
+        is_deleted: false,
+    }
     const where = {
-        OR: [
-            { nganh_nghe_id: major },
-            {
-                ds_tu_khoa: {
-                    some: {
-                        tu_khoa_id: tag
-                    }
-                }
-            },
-        ],
         is_deleted: false,
     }
     try {
@@ -146,12 +148,12 @@ export const getJobs = cache(async (take, page = 1, sort, tag, major) => {
             db.viecLam.findMany({
                 skip: skip,
                 take: take,
-                where: where,
+                where: (tag ? whereTag : major ? whereMajor : where),
                 select: selectJobList,
                 orderBy: sortBy
             }),
             db.viecLam.count({
-                where: where
+                where: (tag ? whereTag : major ? whereMajor : where),
             })
         ])
 
